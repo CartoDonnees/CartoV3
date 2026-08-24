@@ -1,0 +1,56 @@
+.dock {
+  pointer-events: auto;
+  position: absolute;
+  top: 33.333%;
+  z-index: 20;
+  display: flex;
+  transform: translateY(-50%);
+  flex-direction: column;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-radius: var(--radius);
+  padding: 0.375rem;
+}
+
+.btn {
+  position: relative;
+  display: grid;
+  height: 2.75rem;
+  width: 2.75rem;
+  place-items: center;
+  border-radius: 12px;
+  color: color-mix(in oklab, var(--foreground) 70%, transparent);
+  transition: background-color 0.2s, color 0.2s;
+}
+.btn:hover {
+  background: var(--surface-2);
+}
+.btnActive {
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+.btnActive:hover {
+  background: transparent;
+}
+
+.tip {
+  pointer-events: none;
+  position: absolute;
+  left: 100%;
+  margin-left: 0.75rem;
+  display: none;
+  white-space: nowrap;
+  border-radius: 8px;
+  background: var(--foreground);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--background);
+}
+.btn:hover .tip {
+  display: block;
+}

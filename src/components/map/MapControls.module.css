@@ -1,0 +1,104 @@
+.column {
+  pointer-events: auto;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  z-index: 20;
+  display: flex;
+  transform: translateY(-50%);
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.group {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius);
+}
+.sep {
+  margin: 0 0.5rem;
+  height: 1px;
+  background: var(--border);
+}
+.statsBtn {
+  display: grid;
+  height: 2.75rem;
+  width: 2.75rem;
+  place-items: center;
+  border-radius: var(--radius);
+  transition: color 0.2s;
+}
+.statsBtnOn {
+  color: var(--artci-green-700);
+}
+
+.ctrl {
+  display: grid;
+  height: 2.75rem;
+  width: 2.75rem;
+  place-items: center;
+  color: color-mix(in oklab, var(--foreground) 75%, transparent);
+  transition: background-color 0.2s, color 0.2s;
+}
+.ctrl:hover {
+  background: var(--surface-2);
+  color: var(--foreground);
+}
+.ctrlActive {
+  color: var(--artci-green-700);
+}
+
+.styleBar {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 0.8rem;
+  right: 220px;
+  z-index: 20;
+}
+.styleInner {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius);
+  padding: 0.375rem;
+}
+.layersIcon {
+  margin-left: 0.375rem;
+  color: var(--muted);
+}
+.styleBtn {
+  border-radius: 12px;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background-color 0.2s, color 0.2s;
+}
+.styleBtn:hover {
+  background: var(--surface-2);
+}
+.styleBtnActive {
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}
+.styleBtnActive:hover {
+  background: transparent;
+}
+
+.legendBtn {
+  pointer-events: auto;
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.legendIcon {
+  color: var(--artci-green-700);
+}

@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+/* ============================================================
+   CARTODONNEES V3 - Design System ARTCI modernisé
+   Charte : Vert / Orange / Gris / Blanc
+   ============================================================ */
+
+:root {
+  /* Marque ARTCI */
+  --artci-green: #159a4e;
+  --artci-green-600: #0f8442;
+  --artci-green-700: #0b6d37;
+  --artci-orange: #f47b20;
+  --artci-orange-600: #e56a10;
+
+  /* Surfaces & texte (light) */
+  --background: #f5f8f6;
+  --surface: #ffffff;
+  --surface-2: #eef2f0;
+  --foreground: #0e1512;
+  --muted: #647570;
+  --border: #e2e8e5;
+  --ring: color-mix(in oklab, var(--artci-green) 55%, transparent);
+
+  /* Sémantique carte */
+  --covered: #159a4e;
+  --uncovered: #e11d48;
+  --white-zone: #94a3b8;
+  --op-moov: #0aa0dd;
+  --op-mtn: #ffcc00;
+  --op-orange: #f47b20;
+
+  /* Effets */
+  --shadow-sm: 0 1px 2px rgba(14, 21, 18, 0.06);
+  --shadow-md: 0 8px 24px -10px rgba(14, 21, 18, 0.18);
+  --shadow-lg: 0 24px 60px -20px rgba(14, 21, 18, 0.28);
+  --glass-bg: rgba(255, 255, 255, 0.74);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --radius: 8px;
+}
+
+.dark {
+  --background: #0b120f;
+  --surface: #121a16;
+  --surface-2: #182420;
+  --foreground: #eaf2ee;
+  --muted: #8fa39b;
+  --border: #223029;
+  --glass-bg: rgba(18, 26, 22, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --shadow-md: 0 8px 24px -10px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 60px -20px rgba(0, 0, 0, 0.7);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --color-artci-green: var(--artci-green);
+  --color-artci-green-600: var(--artci-green-600);
+  --color-artci-green-700: var(--artci-green-700);
+  --color-artci-orange: var(--artci-orange);
+  --color-artci-orange-600: var(--artci-orange-600);
+
+  --color-covered: var(--covered);
+  --color-uncovered: var(--uncovered);
+  --color-white-zone: var(--white-zone);
+  --color-op-moov: var(--op-moov);
+  --color-op-mtn: var(--op-mtn);
+  --color-op-orange: var(--op-orange);
+
+  --radius-xl: var(--radius);
+  --font-sans: var(--font-sans);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Utilitaires design ------------------------------------------------ */
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: var(--shadow-md);
+}
+
+.brand-gradient {
+  background: linear-gradient(135deg, var(--artci-green) 0%, var(--artci-orange) 100%);
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, var(--artci-green), var(--artci-orange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Scrollbar fine */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--muted) 40%, transparent);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklab, var(--muted) 60%, transparent);
+}
+
+/* Animations */
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-float-in { animation: float-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--artci-green) 45%, transparent); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.pulse-ring { animation: pulse-ring 2s infinite; }
+
+/* Mapbox : neutraliser le fond blanc par défaut */
+.mapboxgl-map { font-family: inherit; }
+
+.rounded-2xl{
+  border-radius: var(--radius);
+}
+
+/* Marqueur de l'entité recherchée (recherche texte / vocale) */
+.carto-search-marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--artci-green), var(--artci-green-700));
+  box-shadow: 0 6px 18px -4px rgba(11, 109, 55, 0.55);
+  cursor: pointer;
+}
+.carto-search-marker__pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--artci-green);
+  opacity: 0.7;
+  animation: carto-marker-pulse 1.8s ease-out infinite;
+}
+@keyframes carto-marker-pulse {
+  0% { transform: scale(0.7); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* Infobulle des marqueurs de qualité de service (survol) */
+.qos-popup .mapboxgl-popup-content {
+  padding: 0.55rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: var(--shadow-md);
+}
+.qos-popup .mapboxgl-popup-tip { border-top-color: var(--surface); border-bottom-color: var(--surface); }
+.qos-popup__svc {
+  font-size: 0.65625rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--artci-green-700);
+}
+.qos-popup__name { font-size: 0.8125rem; font-weight: 800; letter-spacing: -0.01em; }
+.qos-popup__meta { font-size: 0.6875rem; color: var(--muted); }
+.qos-popup__meta b { color: var(--foreground); font-variant-numeric: tabular-nums; }
+/* Bouton « Détails QoS » de l'infobulle (version 2) */
+.qos-popup__btn {
+  display: block; width: 100%; margin-top: 0.5rem;
+  padding: 0.35rem 0.5rem; border: 0; border-radius: 9px;
+  background: linear-gradient(135deg, var(--artci-green), var(--artci-orange));
+  color: #fff; font: inherit; font-size: 0.6875rem; font-weight: 800;
+  cursor: pointer; transition: filter 0.15s;
+}
+.qos-popup__btn:hover { filter: brightness(1.07); }
+/* Laisser la place au bouton de fermeture de l'infobulle */
+.qos-popup .mapboxgl-popup-close-button {
+  padding: 0 0.35rem; color: var(--muted); font-size: 1rem; background: transparent; border: 0;
+}
+.qos-popup .mapboxgl-popup-close-button:hover { color: var(--foreground); background: transparent; }
+
+/* Infobulle de survol d'une localité (couverture, stations, zone blanche) */
+.lh-popup .mapboxgl-popup-content {
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: var(--shadow-md);
+}
+.lh-popup .mapboxgl-popup-tip { border-top-color: var(--surface); border-bottom-color: var(--surface); }
+.lh__name { font-size: 0.8125rem; font-weight: 800; letter-spacing: -0.01em; line-height: 1.2; }
+.lh__path {
+  font-size: 0.625rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.1rem;
+}
+.lh__pop { font-size: 0.6875rem; color: var(--muted); margin-top: 0.2rem; }
+.lh__pop b { color: var(--foreground); font-variant-numeric: tabular-nums; }
+.lh__white {
+  margin-top: 0.45rem; padding: 0.3rem 0.5rem; border-radius: 8px;
+  background: color-mix(in oklab, #0f172a 10%, transparent);
+  border: 1px solid color-mix(in oklab, #0f172a 25%, transparent);
+  font-size: 0.6875rem; font-weight: 700;
+}
+
+/* Tableau opérateurs x technologies (reprise de la version 2) */
+.lh__grid { margin-top: 0.5rem; border-collapse: collapse; font-size: 0.625rem; }
+.lh__grid th {
+  font-weight: 700; color: var(--muted); text-align: center;
+  padding: 0.15rem 0.3rem; white-space: nowrap;
+}
+.lh__grid thead tr:first-child th:not(:first-child) {
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.lh__grid tbody th { text-align: left; color: var(--foreground); padding-right: 0.4rem; }
+.lh__grid td { padding: 0.12rem 0.28rem; text-align: center; }
+/* Séparation entre le bloc couvertures et le bloc stations */
+.lh__grid td:nth-child(5), .lh__grid thead tr:nth-child(2) th:nth-child(5) {
+  border-left: 1px solid var(--border);
+}
+.lh__logo {
+  display: block; width: 22px; height: 22px; object-fit: contain;
+  border-radius: 5px; background: var(--surface-2);
+}
+.lh__mark { display: block; width: 14px; height: 14px; margin: 0 auto; }
+.lh__dot {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  border: 1px solid var(--border); margin-right: 0.25rem; vertical-align: -1px;
+}
+.lh__dot--on { background: var(--artci-green); border-color: var(--artci-green); }
+.lh__dot--soon { background: var(--artci-orange); border-color: var(--artci-orange); }
+.lh__dot--station { background: #3b82f6; border-color: #3b82f6; }
+.lh__dot--off { background: var(--surface-2); }
+.lh__forecast {
+  margin-top: 0.35rem; font-size: 0.5625rem; font-weight: 700; color: var(--artci-orange);
+}
+
+/* Bloc qualité de service de l'infobulle de survol */
+.lh__sub {
+  margin-top: 0.5rem; font-size: 0.5625rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+}
+.lh__grid--qos { margin-top: 0.2rem; }
+.lh__grid--qos tbody th { font-weight: 700; }
+.lh__qos {
+  display: inline-block; min-width: 26px; padding: 0.05rem 0.25rem;
+  border-radius: 6px; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.lh__qos--ok { background: color-mix(in oklab, var(--artci-green) 18%, transparent); color: var(--artci-green-700); }
+.lh__qos--mid { background: color-mix(in oklab, var(--artci-orange) 20%, transparent); color: #b45309; }
+.lh__qos--ko { background: color-mix(in oklab, var(--uncovered) 16%, transparent); color: var(--uncovered); }
+.lh__qos-na { color: var(--muted); }
+.lh__note { margin-top: 0.35rem; font-size: 0.5625rem; font-style: italic; color: var(--muted); }

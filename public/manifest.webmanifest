@@ -1,0 +1,13 @@
+{
+  "name": "CARTODONNEES - Observatoire ARTCI",
+  "short_name": "CARTODONNEES",
+  "description": "Observatoire cartographique des réseaux de télécommunications de Côte d'Ivoire.",
+  "start_url": "/carte",
+  "display": "standalone",
+  "background_color": "#f5f8f6",
+  "theme_color": "#159a4e",
+  "lang": "fr",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,495 @@
+// ============================================================
+// CARTODONNEES V3 — schéma Prisma modernisé (best practices)
+// PostgreSQL · codes publics cuid() · clés naturelles · index FK
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------- Énumérations -----------------------
+
+enum Role {
+  CLIENT
+  OPERATOR
+  CONTROLLER
+  SUPERVISOR
+  ADMIN
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
+enum PeriodType {
+  COVERAGE // couverture (semestres)
+  QOS // qualité de service (campagnes)
+}
+
+enum ReportStatus {
+  PENDING
+  IN_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum ReportCategory {
+  NO_NETWORK
+  SLOW_NETWORK
+  FREQUENT_DROPS
+  APP_ISSUE
+  OTHER
+}
+
+enum ProblemType {
+  APPLICATION
+  NETWORK
+}
+
+enum ProblemLevel {
+  HIGH
+  MEDIUM
+  LOW
+  VOICE
+  SMS
+  DATA
+}
+
+enum DownloadType {
+  XLSX
+  CSV
+  PDF
+  KML
+  GEOJSON
+}
+
+enum DataDomain {
+  COVERAGE
+  QOS
+}
+
+// ----------------------- Utilisateurs -----------------------
+
+model User {
+  id              Int       @id @default(autoincrement())
+  code            String    @unique @default(cuid())
+  firstName       String?
+  lastName        String
+  email           String    @unique
+  phone           String?
+  password        String
+  role            Role      @default(CLIENT)
+  status          Status    @default(ACTIVE)
+  avatarUrl       String?
+  bio             String?   @db.Text
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+  acceptNews      Boolean   @default(false)
+
+  operatorId Int?
+  operator   Operator? @relation(fields: [operatorId], references: [id])
+
+  syncs          Sync[]
+  downloads      Download[]
+  notifications  Notification[]
+  passwordResets PasswordReset[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
+  @@index([status])
+  @@index([operatorId])
+}
+
+model PasswordReset {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// -------------------- Découpage administratif ---------------
+
+model District {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique @default(cuid())
+  name        String
+  centerLat   Float?
+  centerLng   Float?
+  year        Int?
+  description String?  @db.Text
+  coordinates Json?
+  regions     Region[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Region {
+  id          Int          @id @default(autoincrement())
+  code        String       @unique @default(cuid())
+  name        String
+  centerLat   Float?
+  centerLng   Float?
+  year        Int?
+  description String?      @db.Text
+  coordinates Json?
+  districtId  Int
+  district    District     @relation(fields: [districtId], references: [id])
+  departments Department[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([districtId])
+}
+
+model Department {
+  id             Int             @id @default(autoincrement())
+  code           String          @unique @default(cuid())
+  name           String
+  centerLat      Float?
+  centerLng      Float?
+  year           Int?
+  description    String?         @db.Text
+  coordinates    Json?
+  regionId       Int
+  region         Region          @relation(fields: [regionId], references: [id])
+  subPrefectures SubPrefecture[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([regionId])
+}
+
+model SubPrefecture {
+  id           Int        @id @default(autoincrement())
+  code         String     @unique @default(cuid())
+  name         String
+  centerLat    Float?
+  centerLng    Float?
+  year         Int?
+  description  String?    @db.Text
+  coordinates  Json?
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+  localities   Locality[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([departmentId])
+}
+
+model Locality {
+  id               Int      @id @default(autoincrement())
+  code             String   @unique @default(cuid())
+  name             String
+  latitude         Float?
+  longitude        Float?
+  year             Int?
+  population        Int?
+  reliable         Boolean  @default(true)
+  regionChiefTown  Boolean  @default(false)
+  departChiefTown  Boolean  @default(false)
+  subPrefChiefTown Boolean  @default(false)
+  townAndVillage   Boolean  @default(false)
+  status           Status   @default(ACTIVE)
+  description      String?  @db.Text
+
+  subPrefectureId Int
+  subPrefecture   SubPrefecture @relation(fields: [subPrefectureId], references: [id])
+
+  summaries         Summary[]
+  temporalSummaries TemporalSummary[]
+  networkReports    ReportNetworkDeclaration[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subPrefectureId])
+  @@index([name])
+}
+
+// -------------------- Opérateurs & technologies -------------
+
+model Operator {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique @default(cuid())
+  name        String   @unique
+  color       String
+  imagePath   String?
+  fiberKm     Int?
+  status      Status   @default(ACTIVE)
+  description String?  @db.Text
+
+  coverageData         CoverageData[]
+  temporalCoverageData TemporalCoverageData[]
+  users                User[]
+  networkReports       ReportNetworkDeclaration[] @relation("ReportOperators")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Technology {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique @default(cuid())
+  name        String   @unique
+  color       String?
+  status      Status   @default(ACTIVE)
+  imagePath   String?
+  description String?  @db.Text
+
+  coverageData         CoverageData[]
+  temporalCoverageData TemporalCoverageData[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// -------------------- Couverture (synthèses) ----------------
+
+model Summary {
+  id           Int            @id @default(autoincrement())
+  code         String         @unique @default(cuid())
+  localityId   Int
+  locality     Locality       @relation(fields: [localityId], references: [id])
+  // Semestre déclaré : une synthèse par localité et par période.
+  periodId     Int?
+  period       Period?        @relation(fields: [periodId], references: [id])
+  coverageData CoverageData[]
+  description  String?        @db.Text
+  dateUpdate   DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@unique([localityId, periodId])
+  @@index([localityId])
+  @@index([periodId])
+}
+
+model CoverageData {
+  id           Int        @id @default(autoincrement())
+  code         String     @unique @default(cuid())
+  operatorId   Int
+  operator     Operator   @relation(fields: [operatorId], references: [id])
+  technologyId Int
+  technology   Technology @relation(fields: [technologyId], references: [id])
+  summaryId    Int
+  summary      Summary    @relation(fields: [summaryId], references: [id], onDelete: Cascade)
+  coverage     Boolean?
+  popCov       Int?
+  present      Boolean?
+  forecast     Boolean?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([summaryId, operatorId, technologyId])
+  @@index([operatorId])
+  @@index([technologyId])
+  @@index([summaryId])
+}
+
+model TemporalSummary {
+  id                   Int                    @id @default(autoincrement())
+  code                 String                 @unique @default(cuid())
+  localityId           Int
+  locality             Locality               @relation(fields: [localityId], references: [id])
+  temporalCoverageData TemporalCoverageData[]
+  description          String?                @db.Text
+  dateUpdate           DateTime?
+  status               Status                 @default(ACTIVE)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  @@index([localityId])
+}
+
+model TemporalCoverageData {
+  id                Int             @id @default(autoincrement())
+  code              String          @unique @default(cuid())
+  operatorId        Int
+  operator          Operator        @relation(fields: [operatorId], references: [id])
+  technologyId      Int
+  technology        Technology      @relation(fields: [technologyId], references: [id])
+  temporalSummaryId Int
+  temporalSummary   TemporalSummary @relation(fields: [temporalSummaryId], references: [id])
+  coverage          Boolean?
+  popCov            Int?
+  present           Boolean?
+  forecast          Boolean?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([operatorId])
+  @@index([technologyId])
+  @@index([temporalSummaryId])
+}
+
+// -------------------- Périodes & synchronisation ------------
+
+model Period {
+  id        Int        @id @default(autoincrement())
+  code      String     @unique @default(cuid())
+  title     String
+  type      PeriodType @default(COVERAGE)
+  status    Status     @default(ACTIVE)
+  summaries Summary[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([title, type])
+  @@index([type])
+}
+
+model Sync {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique @default(cuid())
+  dateUpdate DateTime
+  entityType String
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// -------------------- Signalements --------------------------
+
+model Problem {
+  id          Int          @id @default(autoincrement())
+  code        String       @unique @default(cuid())
+  type        ProblemType
+  level       ProblemLevel
+  title       String
+  status      Status       @default(ACTIVE)
+  description String?      @db.Text
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  networkReports ReportNetworkDeclaration[] @relation("NetworkReportProblems")
+  appReports     ReportAppDeclaration[]     @relation("AppReportProblems")
+
+  @@index([type])
+}
+
+model ReportAppDeclaration {
+  id            Int          @id @default(autoincrement())
+  code          String       @unique @default(cuid())
+  phone         String?
+  email         String?
+  proofFilePath String?
+  comment       String?      @db.Text
+  status        ReportStatus @default(PENDING)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  problems Problem[] @relation("AppReportProblems")
+
+  @@index([status])
+}
+
+model ReportNetworkDeclaration {
+  id            Int            @id @default(autoincrement())
+  code          String         @unique @default(cuid())
+  phone         String?
+  email         String?
+  proofFilePath String?
+  comment       String?        @db.Text
+  status        ReportStatus   @default(PENDING)
+
+  // Signalement citoyen géolocalisé
+  latitude  Float?
+  longitude Float?
+  category  ReportCategory?
+
+  // Localité déclarée. Le référentiel des localités provient des GeoJSON et
+  // n'est pas en base : on conserve donc le nom saisi (et les coordonnées).
+  // `localityId` reste disponible si le référentiel est un jour importé.
+  localityName String?
+  localityId   Int?
+  locality     Locality? @relation(fields: [localityId], references: [id])
+  operators  Operator[] @relation("ReportOperators")
+  problems   Problem[]  @relation("NetworkReportProblems")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([localityId])
+}
+
+// -------------------- Bulletins / actualités ----------------
+
+model NewsCategory {
+  id          Int          @id @default(autoincrement())
+  code        String       @unique @default(cuid())
+  title       String       @unique
+  description String?
+  newsletters Newsletter[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Newsletter {
+  id          Int          @id @default(autoincrement())
+  code        String       @unique @default(cuid())
+  categoryId  Int
+  category    NewsCategory @relation(fields: [categoryId], references: [id])
+  title       String
+  imagePath   String?
+  filePath    String?
+  videoPath   String?
+  description String?      @db.Text
+  published   Boolean      @default(true)
+  likes       Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([categoryId])
+  @@index([published])
+}
+
+// -------------------- Téléchargements & notifs --------------
+
+model Download {
+  id        Int          @id @default(autoincrement())
+  code      String       @unique @default(cuid())
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id])
+  type      DownloadType
+  domain    DataDomain?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([userId])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  code      String   @unique @default(cuid())
+  sender    String?
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id])
+  title     String?
+  content   String?  @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([read])
+}
