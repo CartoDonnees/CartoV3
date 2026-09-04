@@ -25,7 +25,7 @@ function fmtDate(d) {
   try {
     return new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
   } catch {
-    return "—";
+    return "-";
   }
 }
 
@@ -127,11 +127,11 @@ export default function ReportsManager({ canEdit = true }) {
                           <MapPin size={13} /> {r.lat.toFixed(3)}, {r.lng.toFixed(3)}
                         </span>
                       ) : (
-                        "—"
+                        "-"
                       )}
                     </td>
-                    <td style={{ maxWidth: 260 }}>{r.comment || "—"}</td>
-                    <td className={s.cellMuted}>{r.email || r.phone || "—"}</td>
+                    <td style={{ maxWidth: 260 }}>{r.comment || "-"}</td>
+                    <td className={s.cellMuted}>{r.email || r.phone || "-"}</td>
                     <td>
                       {canEdit ? (
                         <select

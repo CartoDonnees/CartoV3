@@ -1,7 +1,7 @@
 import { legendColumnCount, legendColumns, legendHeightMm } from "@/lib/map-legend";
 
 /**
- * Export cartographique — reprise du contrôle d'export de la version 2
+ * Export cartographique - reprise du contrôle d'export de la version 2
  * (`MapboxExportControlCustom`) : choix du format, du format de page, de
  * l'orientation et de la résolution, avec un rendu hors écran à la définition
  * demandée plutôt qu'une simple capture du canevas affiché.
@@ -295,7 +295,7 @@ export async function exportMapImage(map, { format, size, orientation, dpi, file
       const { jsPDF } = await import("jspdf");
       const pdf = new jsPDF({ orientation, unit: "mm", format: [area.pageWidth, area.pageHeight], compress: true });
       drawHeader(pdf, area.pageWidth, {
-        title: title || "CARTODONNEES — Observatoire ARTCI",
+        title: title || "CARTODONNEES - Observatoire ARTCI",
         subtitle: subtitle || "",
       });
       pdf.addImage(canvas.toDataURL("image/png"), "PNG", area.x, area.y, area.width, area.height, undefined, "FAST");

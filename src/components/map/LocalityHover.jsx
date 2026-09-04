@@ -39,7 +39,7 @@ async function buildQosIndex(campaign) {
  * Infobulle de survol des points de localité : identité, couverture par
  * opérateur et technologie, et synthèse des audits de qualité de service
  * lorsque la localité fait partie de l'échantillon.
- * Une seule écoute globale sert toutes les couches — celles qui ne sont pas
+ * Une seule écoute globale sert toutes les couches - celles qui ne sont pas
  * affichées sont simplement ignorées.
  */
 export function LocalityHover() {

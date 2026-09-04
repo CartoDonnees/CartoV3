@@ -10,7 +10,7 @@ import { formatNumber } from "@/lib/utils";
 const esc = (v) =>
   String(v ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 
-/** Ordre canonique des opérateurs — celui des noms de fichiers et des icônes. */
+/** Ordre canonique des opérateurs - celui des noms de fichiers et des icônes. */
 const OPS = ["MOOV", "MTN", "ORANGE"];
 
 /**
@@ -219,7 +219,7 @@ export function QosLayers() {
     const layerOf = (key) => (key === "audited" ? "qos-audited" : `qos-${key}`);
 
     /* États de pointeur : `hover` suit la souris, `selected` reste tant que la
-       fiche de résultats est ouverte — l'utilisateur voit toujours à quel
+       fiche de résultats est ouverte - l'utilisateur voit toujours à quel
        marqueur elle se rapporte. Les deux se rejouent en réécrivant les
        propriétés des couches, seule voie ouverte pour `icon-size`. */
     let hoverCode = null;
@@ -269,8 +269,8 @@ export function QosLayers() {
 
       content.innerHTML =
         `<div class="qos-popup__svc">${svc ? `Service : ${svc.label}` : "Localité auditée"}</div>` +
-        `<div class="qos-popup__name">${esc(p.ADM4_FR) || "—"}</div>` +
-        `<div class="qos-popup__meta">Sous-préfecture : ${esc(p.ADM3_FR) || "—"}</div>` +
+        `<div class="qos-popup__name">${esc(p.ADM4_FR) || "-"}</div>` +
+        `<div class="qos-popup__meta">Sous-préfecture : ${esc(p.ADM3_FR) || "-"}</div>` +
         `<div class="qos-popup__meta">Population : <b>${formatNumber(Number(p.pop) || 0)}</b></div>` +
         (svc ? `<button type="button" class="qos-popup__btn" data-qos-details>Détails QoS</button>` : "");
 

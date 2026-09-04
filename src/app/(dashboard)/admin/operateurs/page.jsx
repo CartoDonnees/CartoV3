@@ -32,7 +32,7 @@ export default function OperatorsPage() {
             </span>
           ),
         },
-        { key: "fiberKm", label: "Fibre (km)", render: (r) => (r.fiberKm != null ? r.fiberKm.toLocaleString("fr-FR") : "—") },
+        { key: "fiberKm", label: "Fibre (km)", render: (r) => (r.fiberKm != null ? r.fiberKm.toLocaleString("fr-FR") : "-") },
         { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
       ]}
       fields={[

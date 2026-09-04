@@ -10,7 +10,7 @@ const ENUM_TO_LABEL = {
   OTHER: "Autre",
 };
 
-/** GET /api/v1/admin/reports?status=PENDING — signalements citoyens (staff). */
+/** GET /api/v1/admin/reports?status=PENDING - signalements citoyens (staff). */
 export const GET = withErrorHandling(async (request) => {
   const g = await guard(["ADMIN", "SUPERVISOR", "CONTROLLER"]);
   if (g.response) return g.response;

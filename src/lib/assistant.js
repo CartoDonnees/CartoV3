@@ -35,7 +35,7 @@ function ctxLabel(ops, techs) {
 function entityAnswer(e, ops, techs) {
   const s = e.stats;
   const lines = [
-    `**${e.name}** — ${e.levelLabel}`,
+    `**${e.name}** - ${e.levelLabel}`,
     `Couverture population : **${pct(s.perPopCov)}** sur ${fmt(s.pop)} habitants.`,
   ];
   if (s.locs > 1) lines.push(`Localités couvertes : **${fmt(s.locCov)} / ${fmt(s.locs)}** (${pct(s.perLocCov)}).`);
@@ -75,7 +75,7 @@ async function rankingAnswer({ date, level, ops, techs, count, worst }) {
   const head = worst
     ? `Les ${scored.length} ${LEVEL_PLURAL[level]} les **moins couvert${e}**${ctxLabel(ops, techs)} :`
     : `Les ${scored.length} ${LEVEL_PLURAL[level]} les **mieux couvert${e}**${ctxLabel(ops, techs)} :`;
-  const list = scored.map((x, i) => `${i + 1}. **${x.it.name}** — ${pct(x.rate)}`).join("\n");
+  const list = scored.map((x, i) => `${i + 1}. **${x.it.name}** - ${pct(x.rate)}`).join("\n");
   const first = scored[0].it;
 
   return {
@@ -91,7 +91,7 @@ function nationalAnswer(nat, ops, techs) {
   const lines = [
     `**Côte d'Ivoire**${ctxLabel(ops, techs)}`,
     `Population couverte : **${pct(s.perPopCov)}** (${compact(s.pop)} habitants).`,
-    `Localités couvertes : **${fmt(s.locCov)} / ${fmt(s.locs)}** (${pct(s.perLocCov)}) — ${fmt(s.locNoCov)} non couvertes.`,
+    `Localités couvertes : **${fmt(s.locCov)} / ${fmt(s.locs)}** (${pct(s.perLocCov)}) - ${fmt(s.locNoCov)} non couvertes.`,
     `Stations radioélectriques : **${fmt(s.stations)}**.`,
   ];
   if (ops?.length || techs?.length) {

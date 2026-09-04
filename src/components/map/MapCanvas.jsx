@@ -189,7 +189,7 @@ export function MapCanvas() {
       applyLevelState(cfg);
     };
 
-    // Bordure de l'État de Côte d'Ivoire — TOUJOURS visible, à tous les zooms, noire et large.
+    // Bordure de l'État de Côte d'Ivoire - TOUJOURS visible, à tous les zooms, noire et large.
     const ensureStateBorder = async () => {
       if (!map.getStyle() || map.getLayer("state-border")) return;
       let data = dataRef.current.state;

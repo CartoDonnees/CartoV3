@@ -4,10 +4,11 @@ import { AnimatePresence, motion } from "motion/react";
 import { X, MapPinned, Radio, Network, Shapes, Gauge } from "lucide-react";
 import { useMapStore } from "@/stores/map-store";
 import { iconDataUri, qosIconId } from "@/lib/mapIcons";
+import { FIBER_LAYERS, ROAD_LAYERS } from "@/config/artci";
 
 /* Couverture des localités par technologie (meilleure techno disponible) */
 const COVERAGE = [
-  { icon: "ic-tech-4G", label: "Couverte en 4G", desc: "Internet mobile très haut débit — meilleure technologie disponible." },
+  { icon: "ic-tech-4G", label: "Couverte en 4G", desc: "Internet mobile très haut débit - meilleure technologie disponible." },
   { icon: "ic-tech-3G", label: "Couverte en 3G", desc: "Internet mobile (haut débit)." },
   { icon: "ic-tech-2G", label: "Couverte en 2G", desc: "Voix et SMS (réseau de base)." },
   { icon: "ic-uncovered", label: "Localité non couverte", desc: "Aucun réseau mobile pour les technologies sélectionnées." },
@@ -29,12 +30,23 @@ const QOS = [
   { icon: qosIconId("DATA", ["MOOV", "MTN", "ORANGE"]), label: "Audit Internet", desc: "Taux de connexion et débits moyens montant / descendant." },
 ];
 
-/* Infrastructures (lignes) */
+/* Infrastructures : mêmes couleurs que les couches de la carte. */
+const FIBER_DESC = {
+  showFiberORANGE: "Tracé du réseau de fibre optique d'Orange (~12 296 km).",
+  showFiberMTN: "Tracé du réseau de fibre optique de MTN (~5 800 km).",
+  showFiberAwale: "Tracé du réseau de fibre optique d'Awalé (~2 388 km).",
+  showFiberAnsut: "Réseau national haut débit de l'ANSUT.",
+};
 const INFRA = [
-  { color: "#f47b20", label: "Fibre optique Orange", desc: "Tracé du réseau de fibre optique d'Orange (~12 296 km).", dashed: false },
-  { color: "#ffcc00", label: "Fibre optique MTN", desc: "Tracé du réseau de fibre optique de MTN (~5 800 km).", dashed: false },
-  { color: "#a855f7", label: "Fibre optique Awalé", desc: "Tracé du réseau de fibre optique d'Awalé (~2 388 km).", dashed: false },
-  { color: "#334155", label: "Chemins de fer", desc: "Réseau ferroviaire national.", dashed: true },
+  ...FIBER_LAYERS.map((f) => ({ color: f.color, label: f.label, desc: FIBER_DESC[f.ctrl], dashed: false })),
+  ...ROAD_LAYERS.map((r) => ({
+    color: r.color,
+    label: r.label,
+    desc: r.classes
+      ? "Tracé issu du réseau routier du fond de carte."
+      : "Réseau ferroviaire national.",
+    dashed: r.dashed,
+  })),
 ];
 
 /* Limites administratives (lignes) */
@@ -94,7 +106,7 @@ export function LegendModal() {
               <Group icon={<Gauge size={15} />} title="Qualité de service">
                 {QOS.map((it) => <PinRow key={it.icon} {...it} />)}
                 <p className="pt-1 text-[11px] leading-relaxed text-muted">
-                  L'<strong className="font-semibold text-foreground">anneau</strong> du marqueur se découpe en un arc par opérateur audité — bleu Moov, jaune MTN, orange Orange. Cliquez un marqueur pour lire les indicateurs et leur conformité aux seuils réglementaires.
+                  L'<strong className="font-semibold text-foreground">anneau</strong> du marqueur se découpe en un arc par opérateur audité - bleu Moov, jaune MTN, orange Orange. Cliquez un marqueur pour lire les indicateurs et leur conformité aux seuils réglementaires.
                 </p>
               </Group>
 

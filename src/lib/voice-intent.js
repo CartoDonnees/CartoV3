@@ -22,7 +22,7 @@ const SYSTEM = `Tu convertis une note vocale (souvent mal transcrite, en frança
 Règles :
 - « entity » = uniquement le nom propre du lieu, sans le type ni les mots de liaison. Exemple : « la couverture réseau à Korhogo » → « Korhogo ».
 - Corrige les erreurs de transcription phonétique sur les noms de lieux ivoiriens (ex. « boiraké »/« bwake » → « Bouaké », « yamousoukro » → « Yamoussoukro », « corogo » → « Korhogo », « aboidjan » → « Abidjan »).
-- « level » : le type seulement s'il est dit explicitement (district, région, département, sous-préfecture). **Si aucun type n'est cité, réponds « locality »** — par défaut une demande porte sur une localité.
+- « level » : le type seulement s'il est dit explicitement (district, région, département, sous-préfecture). **Si aucun type n'est cité, réponds « locality »** - par défaut une demande porte sur une localité.
 - « operators » / « technologies » seulement si cités. La dictée déforme souvent ces mots : « 2 jeux »/« de jeux »/« de chez » → 2G ; « 3 jeux »/« trajet » → 3G ; « 4 jeux »/« quartier »/« quatre G » → 4G ; « mauve »/« mouve »/« moore »/« gémo » → MOOV ; « GMT »/« aime té enne » → MTN ; « aurange » → ORANGE.
 - « normalized » = phrase courte décrivant la requête, ex. « Couverture 4G de Orange à Korhogo ».
 - Si aucun lieu n'est identifiable, « entity » vide.`;
@@ -30,7 +30,7 @@ Règles :
 /**
  * Corrections phonétiques de la reconnaissance vocale française (reprises de la V2,
  * enrichies). La dictée confond très souvent « 2G » avec « 2 jeux », « MOOV » avec
- * « mauve », etc. — ces variantes sont détectées avant toute analyse.
+ * « mauve », etc. - ces variantes sont détectées avant toute analyse.
  */
 export const COMMAND_MAPPINGS = {
   "2G": ["2g", "2 g", "2d", "2 d", "2j", "2 j", "dg", "d g", "tg", "t g", "de gmt", "dgt",
@@ -68,7 +68,7 @@ const STOP_WORDS = [
   "et", "en", "l", "d", "the", "of",
 ];
 
-/** Extraction heuristique locale (sans modèle) — repli si l'API n'est pas configurée. */
+/** Extraction heuristique locale (sans modèle) - repli si l'API n'est pas configurée. */
 export function localIntent(transcript) {
   const raw = String(transcript || "");
   const n = norm(raw);

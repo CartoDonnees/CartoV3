@@ -22,7 +22,7 @@ function categoryFrom(problems) {
 
 const str = (v, max) => (v == null ? null : String(v).trim().slice(0, max) || null);
 
-/** GET /api/v1/reports — signalements citoyens géolocalisés (carte de chaleur). */
+/** GET /api/v1/reports - signalements citoyens géolocalisés (carte de chaleur). */
 export const GET = withErrorHandling(async () => {
   const rows = await prisma.reportNetworkDeclaration.findMany({
     where: { latitude: { not: null }, longitude: { not: null } },
@@ -48,7 +48,7 @@ export const GET = withErrorHandling(async () => {
 });
 
 /**
- * POST /api/v1/reports — enregistre un signalement citoyen.
+ * POST /api/v1/reports - enregistre un signalement citoyen.
  *
  * Deux natures, comme en version 2 :
  *  - `kind: "network"` : opérateurs concernés + localité + problèmes réseau

@@ -14,14 +14,14 @@ const OP_COLOR = Object.fromEntries(OPERATORS.map((o) => [o.code, o.color]));
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : null);
 /** Formatte une mesure selon son unité (les débits sont en kbit/s). */
 const fmt = (v, ind) =>
-  v == null ? "—" : ind.unit === "kbit/s" ? `${formatNumber(Math.round(v))} kbit/s` : `${v.toFixed(2)}${ind.unit}`;
+  v == null ? "-" : ind.unit === "kbit/s" ? `${formatNumber(Math.round(v))} kbit/s` : `${v.toFixed(2)}${ind.unit}`;
 
 /** Énoncé du seuil réglementaire d'un indicateur. */
 const thresholdLabel = (ind) =>
-  ind.threshold == null ? "—" : `${ind.dir === "max" ? "≤" : "≥"} ${ind.threshold}${ind.unit || ""}`;
+  ind.threshold == null ? "-" : `${ind.dir === "max" ? "≤" : "≥"} ${ind.threshold}${ind.unit || ""}`;
 
 /**
- * Fiche des résultats d'audit d'une localité — ouverte en cliquant sur un
+ * Fiche des résultats d'audit d'une localité - ouverte en cliquant sur un
  * marqueur de qualité de service. Reprend le tableau de la version 2 :
  * un indicateur par ligne, un opérateur par colonne, avec le rang mesuré
  * et le respect du seuil réglementaire.

@@ -173,7 +173,7 @@ export function DataHubModal() {
                     </div>
                   </Group>
                   <Group icon={ExternalLink} title="Contact & liens">
-                    <RowLink external icon={ExternalLink} title="Site de l'ARTCI" desc="artci.ci — missions et publications." href="https://www.artci.ci" />
+                    <RowLink external icon={ExternalLink} title="Site de l'ARTCI" desc="artci.ci - missions et publications." href="https://www.artci.ci" />
                     <RowLink external icon={Phone} title="+225 27 20 34 43 73" desc="Standard de l'ARTCI." href="tel:+2252720344373" />
                   </Group>
                 </div>

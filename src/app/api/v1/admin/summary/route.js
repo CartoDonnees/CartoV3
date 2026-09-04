@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { ok, withErrorHandling } from "@/lib/api/response";
 import { guard } from "@/lib/auth-server";
 
-/** GET /api/v1/admin/summary — compteurs pour le tableau de bord admin. */
+/** GET /api/v1/admin/summary - compteurs pour le tableau de bord admin. */
 export const GET = withErrorHandling(async () => {
   const g = await guard(["ADMIN"]);
   if (g.response) return g.response;

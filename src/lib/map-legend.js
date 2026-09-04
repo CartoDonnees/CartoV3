@@ -7,7 +7,7 @@
  */
 import {
   OPERATORS, TECHNOLOGIES, ADMIN_LIMITS,
-  FIBER_LAYERS, ADMIN_LINE_STYLE, COVERAGE_SCALE, POINT_COLORS,
+  FIBER_LAYERS, ADMIN_LINE_STYLE, ROAD_LAYERS, COVERAGE_SCALE, POINT_COLORS,
 } from "@/config/artci";
 
 const OP = Object.fromEntries(OPERATORS.map((o) => [o.code, o]));
@@ -21,7 +21,7 @@ const SWATCH = "swatch";
 
 /**
  * Construit la légende à partir de l'état du panneau.
- * @returns [{ title, items: [{ label, color, shape }] }] — groupes non vides
+ * @returns [{ title, items: [{ label, color, shape }] }] - groupes non vides
  */
 export function buildLegend(state = {}) {
   const {
@@ -55,7 +55,7 @@ export function buildLegend(state = {}) {
       shape: POINT,
     },
     showWhiteZones && {
-      label: "Zone blanche — ni couverture ni prévision",
+      label: "Zone blanche - ni couverture ni prévision",
       color: POINT_COLORS.whiteZone,
       shape: POINT,
     },
@@ -67,7 +67,7 @@ export function buildLegend(state = {}) {
     mapOperators.map((code) => {
       const techs = operatorTechs[code] ?? technologies;
       return {
-        label: `${OP[code]?.name ?? code}${techs?.length ? ` — ${techs.join(", ")}` : ""}`,
+        label: `${OP[code]?.name ?? code}${techs?.length ? ` - ${techs.join(", ")}` : ""}`,
         color: OP[code]?.color,
         shape: POINT,
       };
@@ -97,7 +97,7 @@ export function buildLegend(state = {}) {
     },
     ...(controls.showServiceBase && qosOperators.length
       ? services.map((s) => ({
-          label: `Audit ${s} — ${qosOperators.map((c) => OP[c]?.name ?? c).join(", ")}`,
+          label: `Audit ${s} - ${qosOperators.map((c) => OP[c]?.name ?? c).join(", ")}`,
           color: POINT_COLORS.whiteZone,
           shape: POINT,
         }))
@@ -114,14 +114,21 @@ export function buildLegend(state = {}) {
   /* --------------------------- Infrastructures -------------------------- */
   push(
     "Infrastructures",
-    [
-      ...FIBER_LAYERS.filter((f) => controls[f.ctrl]).map((f) => ({
-        label: f.label,
-        color: f.color,
-        shape: LINE,
-      })),
-      controls.railway && { label: "Chemins de fer", color: "#334155", shape: LINE },
-    ],
+    FIBER_LAYERS.filter((f) => controls[f.ctrl]).map((f) => ({
+      label: f.label,
+      color: f.color,
+      shape: LINE,
+    })),
+  );
+
+  /* ------------------- Réseau routier et ferroviaire -------------------- */
+  push(
+    "Réseau routier et ferroviaire",
+    ROAD_LAYERS.filter((r) => controls[r.key]).map((r) => ({
+      label: r.label,
+      color: r.color,
+      shape: LINE,
+    })),
   );
 
   /* ----------------------- Limites administratives ---------------------- */

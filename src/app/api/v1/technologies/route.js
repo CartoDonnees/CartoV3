@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ok, withErrorHandling } from "@/lib/api/response";
 
-/** GET /api/v1/technologies — technologies (depuis la base). */
+/** GET /api/v1/technologies - technologies (depuis la base). */
 export const GET = withErrorHandling(async () => {
   const rows = await prisma.technology.findMany({
     where: { status: "ACTIVE" },

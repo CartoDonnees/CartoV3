@@ -32,7 +32,7 @@ const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
 const keyPart = (selected, all) => (selected.length === all.length ? "" : selected.join("_"));
 
 /**
- * Vue « Statistiques nationales » — reproduction de `AdminNationalStatistics`
+ * Vue « Statistiques nationales » - reproduction de `AdminNationalStatistics`
  * de la version 2 : filtres semestre / opérateurs / technologies, indicateurs
  * clés, anneaux de synthèse et graphiques croisés opérateur × technologie.
  * `operator` verrouille la vue sur un seul réseau (espace opérateur).
@@ -125,14 +125,14 @@ export function NationalStatistics({ stats, date, periods, onDateChange, operato
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <Tile icon={CalendarRange} label="Total prévisions" value={v.forecast ? formatNumber(v.forecast) : "—"} color="#647570" />
+            <Tile icon={CalendarRange} label="Total prévisions" value={v.forecast ? formatNumber(v.forecast) : "-"} color="#647570" />
             {techs.map((t) => (
               <Tile
                 key={t}
                 icon={CalendarRange}
                 tag={t}
                 label="Prévisions"
-                value={v.forecastByTech[t] ? formatNumber(v.forecastByTech[t]) : "—"}
+                value={v.forecastByTech[t] ? formatNumber(v.forecastByTech[t]) : "-"}
                 delta={v.varForecastByTech[t]}
                 color={TECH_COLOR[t]}
               />
@@ -178,7 +178,7 @@ export function NationalStatistics({ stats, date, periods, onDateChange, operato
 
           <p className="rounded-2xl border border-artci-orange/35 bg-artci-orange/10 px-4 py-3 text-[12px] leading-relaxed">
             <span className="font-bold">Rappel :</span> nombre total de localités{" "}
-            <b>{formatNumber(v.locs)}</b> — population totale (source {rgphFor(date).label}){" "}
+            <b>{formatNumber(v.locs)}</b> - population totale (source {rgphFor(date).label}){" "}
             <b>{formatNumber(v.pop)}</b>.
           </p>
         </>

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ok, withErrorHandling } from "@/lib/api/response";
 import { verifyToken, publicUser, SESSION_COOKIE } from "@/lib/auth";
 
-/** GET /api/v1/auth/me — retourne l'utilisateur connecté (ou null). */
+/** GET /api/v1/auth/me - retourne l'utilisateur connecté (ou null). */
 export const GET = withErrorHandling(async () => {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;

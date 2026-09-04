@@ -180,7 +180,7 @@ export default function QosDashboardPage() {
   return (
     <PublicDashboard
       title="Qualité de service"
-      subtitle="Bilan et historique des campagnes d'audit — Observatoire ARTCI"
+      subtitle="Bilan et historique des campagnes d'audit - Observatoire ARTCI"
       icon={Gauge}
       toolbar={toolbar}
     >
@@ -200,7 +200,7 @@ export default function QosDashboardPage() {
               <Kpi icon={Gauge} value={indicators.length} label="Indicateurs mesurés" color="#8b5cf6" />
               <Kpi
                 icon={compliance.pct >= 50 ? CheckCircle2 : XCircle}
-                value={compliance.pct == null ? "—" : `${compliance.pct.toFixed(0)} %`}
+                value={compliance.pct == null ? "-" : `${compliance.pct.toFixed(0)} %`}
                 label="Conformité aux seuils"
                 hint={`${compliance.ok}/${compliance.total} mesures conformes`}
                 color={compliance.pct >= 75 ? "var(--artci-green)" : compliance.pct >= 50 ? "#f47b20" : "var(--uncovered)"}
@@ -244,7 +244,7 @@ export default function QosDashboardPage() {
                           <span className="ml-1.5 text-[11px] text-muted">{r.ind.name}</span>
                         </td>
                         <td className="whitespace-nowrap px-2 py-2 text-[11.5px] text-muted">
-                          {r.ind.threshold == null ? "—" : `${r.ind.dir === "max" ? "≤" : "≥"} ${r.ind.threshold} ${r.ind.unit}`}
+                          {r.ind.threshold == null ? "-" : `${r.ind.dir === "max" ? "≤" : "≥"} ${r.ind.threshold} ${r.ind.unit}`}
                         </td>
                         {OPS.map((op) => {
                           const v = r.values[op];
@@ -257,7 +257,7 @@ export default function QosDashboardPage() {
                                 }`}
                               >
                                 {ok !== null && (ok ? <CheckCircle2 size={11} /> : <XCircle size={11} />)}
-                                {v ?? "—"}
+                                {v ?? "-"}
                               </span>
                             </td>
                           );
@@ -321,7 +321,7 @@ export default function QosDashboardPage() {
                                   ok === null ? "" : ok ? "text-artci-green-700" : "text-uncovered font-semibold"
                                 }`}
                               >
-                                {v ?? "—"}
+                                {v ?? "-"}
                               </td>
                             );
                           }),
@@ -332,7 +332,7 @@ export default function QosDashboardPage() {
                 </table>
               </div>
               <p className="mt-2 text-[11px] text-muted">
-                {formatNumber(localities.length)} localité(s){localities.length > 200 && " — 200 premières affichées"}
+                {formatNumber(localities.length)} localité(s){localities.length > 200 && " - 200 premières affichées"}
               </p>
             </Panel>
           </div>
@@ -346,7 +346,7 @@ export default function QosDashboardPage() {
           {indicators.map((ind) => (
             <Panel
               key={ind.key}
-              title={`${ind.label} — ${ind.name}`}
+              title={`${ind.label} - ${ind.name}`}
               hint={ind.threshold == null ? "Évolution par campagne" : `Seuil réglementaire : ${ind.dir === "max" ? "≤" : "≥"} ${ind.threshold} ${ind.unit}`}
             >
               <ResponsiveContainer width="100%" height={220}>

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { ok, fail, withErrorHandling } from "@/lib/api/response";
 import { hashPassword, signToken, sessionCookieOptions, publicUser, SESSION_COOKIE } from "@/lib/auth";
 
-/** POST /api/v1/auth/register — crée un compte client et ouvre une session. */
+/** POST /api/v1/auth/register - crée un compte client et ouvre une session. */
 export const POST = withErrorHandling(async (request) => {
   const body = await request.json().catch(() => ({}));
   const email = (body.email || "").trim().toLowerCase();

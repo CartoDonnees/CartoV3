@@ -5,7 +5,7 @@ import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, ChevronsUpDown, Loader2 } f
 import { nextSort, sortRows } from "@/lib/sort";
 
 /**
- * Primitives d'interface CARTODONNEES — source unique du design de
+ * Primitives d'interface CARTODONNEES - source unique du design de
  * l'application (carte, tableaux de bord publics et back-office).
  * Toute nouvelle vue doit composer ces briques plutôt que redéfinir ses
  * propres cartes, onglets ou indicateurs.
@@ -31,7 +31,7 @@ export function Card({ title, hint, actions, className = "", children, ...rest }
   );
 }
 
-/** Bloc à bandeau inversé — regroupe des vignettes de même nature. */
+/** Bloc à bandeau inversé - regroupe des vignettes de même nature. */
 export function SectionCard({ title, cols = 2, className = "", children }) {
   return (
     <section className={`overflow-hidden rounded-2xl border border-border bg-surface shadow-sm ${className}`}>
@@ -81,7 +81,7 @@ export function Tile({ icon: Icon, label, tag, value, hint, delta, badge, color 
 }
 
 /**
- * Indicateur compact — même typographie que `Tile`, taillé pour les
+ * Indicateur compact - même typographie que `Tile`, taillé pour les
  * panneaux étroits de la carte (fiche d'entité, outils, bandeau).
  */
 export function MiniStat({ icon: Icon, value, label, color }) {
@@ -101,7 +101,7 @@ export function MiniStat({ icon: Icon, value, label, color }) {
   );
 }
 
-/** Variation d'un semestre à l'autre — « -- % » quand elle est inconnue. */
+/** Variation d'un semestre à l'autre - « -- % » quand elle est inconnue. */
 export function Delta({ value }) {
   if (!value) return <span className="shrink-0 text-[11px] text-muted">-- %</span>;
   const up = value > 0;
@@ -130,7 +130,7 @@ export function Meter({ label, value, color = "var(--artci-green)" }) {
 /* -------------------------------- Contrôles ------------------------------ */
 
 /**
- * Onglets — l'onglet actif porte toujours le dégradé de marque.
+ * Onglets - l'onglet actif porte toujours le dégradé de marque.
  * `pill` pour une page, `segment` pour un panneau étroit (largeurs égales),
  * `compact` pour une barre défilante dans une fenêtre modale.
  */

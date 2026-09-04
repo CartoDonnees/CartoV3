@@ -18,7 +18,7 @@ export default function CoverageDashboardPage() {
   return (
     <PublicDashboard
       title="Couverture des réseaux de télécommunications"
-      subtitle="Vue d'ensemble des indicateurs clés de couverture — Observatoire ARTCI"
+      subtitle="Vue d'ensemble des indicateurs clés de couverture - Observatoire ARTCI"
       icon={Radio}
     >
       <CoverageDashboardBody date={date} onDateChange={setDate} />

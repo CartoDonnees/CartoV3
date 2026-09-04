@@ -18,7 +18,7 @@ export const RGPH = [
   { label: "RGPH 2021", code: "RG-2021" },
 ];
 
-/** Libellé d'une période — résolu contre la liste dynamique (base) puis le repli. */
+/** Libellé d'une période - résolu contre la liste dynamique (base) puis le repli. */
 export const periodLabel = (date) => {
   const list = useMapStore.getState?.().periods ?? PERIODS;
   return list.find((p) => p.date === date)?.label ?? date;
@@ -117,7 +117,7 @@ export const useMapStore = create((set, get) => ({
     }
   },
 
-  /** Chargement de données carto (compteur de requêtes en cours) — bloque la carte. */
+  /** Chargement de données carto (compteur de requêtes en cours) - bloque la carte. */
   mapLoading: false,
   loadingCount: 0,
   beginLoading: () => set((s) => ({ loadingCount: s.loadingCount + 1, mapLoading: true })),
@@ -234,7 +234,7 @@ export const useMapStore = create((set, get) => ({
   toggleControl: (key) => set((s) => ({ controls: { ...s.controls, [key]: !s.controls[key] } })),
 
   /**
-   * Bascule entre les deux domaines exclusifs du panneau — couverture réseau
+   * Bascule entre les deux domaines exclusifs du panneau - couverture réseau
    * et qualité de service. Les deux jeux de couches ne se lisent pas ensemble
    * sur la carte : activer l'un remet l'autre à zéro et replie sa section.
    */

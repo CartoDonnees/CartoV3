@@ -40,7 +40,7 @@ export default function UsersPage() {
         { key: "lastName", label: "Nom", strong: true, render: (r) => `${r.firstName || ""} ${r.lastName}`.trim() },
         { key: "email", label: "E-mail" },
         { key: "role", label: "Rôle", render: (r) => <RoleBadge role={r.role} /> },
-        { key: "operatorName", label: "Opérateur", render: (r) => r.operatorName || "—" },
+        { key: "operatorName", label: "Opérateur", render: (r) => r.operatorName || "-" },
         { key: "status", label: "Statut", render: (r) => <StatusBadge status={r.status} /> },
       ]}
       fields={[

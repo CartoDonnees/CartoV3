@@ -1,3 +1,4 @@
+import "./load-env.mjs";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -88,7 +89,7 @@ async function main() {
         // Médias de démonstration : images déjà présentes dans `public/images`
         // et document d'exemple dans `public/uploads` (à remplacer par les
         // publications réelles de l'ARTCI).
-        { categoryId: cat.id, title: "Publication des données de couverture — S1 2025", description: "Les données de couverture du premier semestre 2025 sont désormais disponibles sur l'observatoire. Elles couvrent l'ensemble des localités du territoire, par opérateur et par technologie.", imagePath: "/images/network1.png", filePath: "exemple-document.pdf", published: true },
+        { categoryId: cat.id, title: "Publication des données de couverture - S1 2025", description: "Les données de couverture du premier semestre 2025 sont désormais disponibles sur l'observatoire. Elles couvrent l'ensemble des localités du territoire, par opérateur et par technologie.", imagePath: "/images/network1.png", filePath: "exemple-document.pdf", published: true },
         { categoryId: cat.id, title: "Extension de la 4G dans les zones rurales", description: "Les opérateurs poursuivent le déploiement de la 4G dans les localités faiblement couvertes.", imagePath: "/images/antenna/antenna.png", published: true },
         { categoryId: cat.id, title: "Nouvelle campagne de mesure de la qualité de service", description: "L'ARTCI lance une nouvelle campagne d'audit QoS sur l'ensemble du territoire.", published: true },
     ];

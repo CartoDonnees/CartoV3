@@ -6,7 +6,7 @@ import {
   getLocalities, getWhiteLocalities, getFiber, getRailways, ADMIN_LOADERS,
 } from "@/lib/geodata";
 import { registerMapIcons } from "@/lib/mapIcons";
-import { ADMIN_LINE_STYLE, FIBER_LAYERS } from "@/config/artci";
+import { ADMIN_LINE_STYLE, FIBER_LAYERS, ROAD_LAYERS } from "@/config/artci";
 
 /* Expressions de filtre sur les points de localité (flags cov{TECH} = 0/1). */
 const uncoveredExpr = (techs) => ["all", ...techs.map((t) => ["==", ["get", `cov${t}`], 0])];
@@ -37,7 +37,7 @@ const COL_X = { "2G": -14, "3G": 0, "4G": 14 }; // technologies côte à côte (
 const ROW_SPLIT = 12; // décalage vertical d'une rangée quand les 2 vues coexistent
 const covByTech = (t) => ["==", ["get", `cov${t}`], 1];
 
-/* « Localités » : points nets à tous les zooms — opacité CONSTANTE (aucune
+/* « Localités » : points nets à tous les zooms - opacité CONSTANTE (aucune
    dégradation au zoom), seul le rayon grandit légèrement pour rester lisible. */
 const LOCALITY_PAINT = {
   "circle-radius": ["interpolate", ["linear"], ["zoom"], 5, 2.2, 8, 3.4, 12, 5],
@@ -64,7 +64,7 @@ const LOCALITY_LABEL_PAINT = {
 
 /* ------------------------------ Zones blanches ---------------------------- */
 /* Localités sans couverture NI prévision : l'indicateur le plus critique de la
-   carte. Il reste PLEINEMENT visible à tous les niveaux de zoom — aucune
+   carte. Il reste PLEINEMENT visible à tous les niveaux de zoom - aucune
    opacité n'est interpolée, ni sur le halo ni sur le marqueur. Seule la
    TAILLE varie, selon le zoom et la population privée de réseau : plus une
    zone blanche pèse, plus elle se voit, du niveau national au niveau rue. */
@@ -126,6 +126,35 @@ export const LOCALITY_LAYERS = [
 /* Couleurs partagées avec la légende des exports (voir `config/artci`). */
 const FIBERS = FIBER_LAYERS;
 const ADMIN = ADMIN_LINE_STYLE;
+
+/* --------------------------- Réseau routier ------------------------------- */
+/* Autoroutes, routes nationales et pistes ne figurent dans aucun fichier du
+   projet : elles sont tracées depuis la couche vectorielle « road » du fond
+   Mapbox, filtrée sur la classe de voie. */
+const ROADS = ROAD_LAYERS.filter((r) => r.classes);
+
+/** Identifiant de la source vectorielle Mapbox Streets du style courant. */
+function streetsSource(map) {
+  const sources = map.getStyle()?.sources ?? {};
+  for (const [id, src] of Object.entries(sources)) {
+    if (src?.type === "vector" && String(src.url || "").includes("mapbox-streets")) return id;
+  }
+  return sources.composite?.type === "vector" ? "composite" : null;
+}
+
+/** Épaisseur : discrète à l'échelle du pays, franche une fois zoomé. */
+const roadWidth = (w) => [
+  "interpolate", ["linear"], ["zoom"],
+  5, w * 0.35,
+  8, w * 0.7,
+  12, w * 1.6,
+  16, w * 3,
+];
+
+/** Première couche de marqueurs présente — les routes se glissent dessous. */
+function firstMarkerLayer(map) {
+  return LOCALITY_LAYERS.find((id) => map.getLayer(id));
+}
 
 /** Gère toutes les couches carto pilotées par les filtres (hors choroplèthe de base). */
 export function LayerManager() {
@@ -259,10 +288,50 @@ export function LayerManager() {
       // ---- Fibres optiques ----
       for (const f of FIBERS) {
         const src = `fib-${f.op}`;
-        if (st.controls[f.ctrl]) {
-          if (!(await ensureSource(src, () => getFiber(f.op)))) return;
-          ensureLayer(src, true, () => map.addLayer({ id: src, type: "line", source: src, paint: { "line-color": f.color, "line-width": 2.5, "line-opacity": 0.95 } }));
-        } else removeLayer(src);
+        if (!st.controls[f.ctrl]) {
+          removeLayer(src);
+          continue;
+        }
+        if (!(await ensureSource(src, () => getFiber(f.op)))) return;
+        ensureLayer(src, true, () =>
+          map.addLayer({
+            id: src,
+            type: "line",
+            source: src,
+            layout: { "line-join": "round", "line-cap": "round" },
+            paint: { "line-color": f.color, "line-width": 2.5, "line-opacity": 0.95 },
+          }),
+        );
+      }
+
+      // ---- Réseau routier (issu du fond de carte) ----
+      const streets = streetsSource(map);
+      for (const r of ROADS) {
+        const id = `road-${r.key}`;
+        if (!streets || !st.controls[r.key]) {
+          removeLayer(id);
+          continue;
+        }
+        ensureLayer(id, true, () =>
+          map.addLayer(
+            {
+              id,
+              type: "line",
+              source: streets,
+              "source-layer": "road",
+              filter: ["match", ["get", "class"], r.classes, true, false],
+              layout: { "line-cap": "round", "line-join": "round" },
+              paint: {
+                "line-color": r.color,
+                "line-width": roadWidth(r.width),
+                "line-opacity": 0.9,
+                ...(r.dashed ? { "line-dasharray": [2, 1.6] } : {}),
+              },
+            },
+            // Sous les marqueurs de localité, au-dessus du fond et de la choroplèthe.
+            firstMarkerLayer(map),
+          ),
+        );
       }
 
       // ---- Chemins de fer ----

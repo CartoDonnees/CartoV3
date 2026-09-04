@@ -116,7 +116,7 @@ const ICON_SVG = {
   "ic-qos-audited": BADGE("#0f8442", GLYPHS.check),
   "ic-covered": BADGE("#159a4e", GLYPHS.check),
   "ic-uncovered": BADGE("#e11d48", GLYPHS.cross),
-  // Zone blanche : cœur blanc cerné de noir — lisible sur tous les fonds de carte.
+  // Zone blanche : cœur blanc cerné de noir - lisible sur tous les fonds de carte.
   "ic-white": `
 <svg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'>
   <defs><filter id='w' x='-40%' y='-40%' width='180%' height='180%'>
@@ -134,7 +134,7 @@ const ICON_SVG = {
   "ic-op-MOOV": TRIANGLE("#0aa0dd", 240),
 };
 
-/* Triangle centré (apex en haut) pour l'UI — légende & sidebar (pas la carte). */
+/* Triangle centré (apex en haut) pour l'UI - légende & sidebar (pas la carte). */
 const OP_CHIP = (color) => `
 <svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'>
   <defs><filter id='c' x='-30%' y='-30%' width='160%' height='160%'>

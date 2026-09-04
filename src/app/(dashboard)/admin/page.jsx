@@ -59,7 +59,7 @@ export default function AdminDashboard() {
                       {sum.recentReports.map((r) => (
                         <tr key={r.code}>
                           <td className={s.cellStrong}>{CAT_LABEL[r.category] || "Autre"}</td>
-                          <td className={s.cellMuted} style={{ maxWidth: 160 }}>{r.comment || "—"}</td>
+                          <td className={s.cellMuted} style={{ maxWidth: 160 }}>{r.comment || "-"}</td>
                           <td style={{ textAlign: "right" }}><StatusBadge status={r.status} /></td>
                         </tr>
                       ))}

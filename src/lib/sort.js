@@ -1,10 +1,10 @@
 /**
- * Tri des tableaux de l'application — logique pure, sans React.
+ * Tri des tableaux de l'application - logique pure, sans React.
  * Utilisé par `useTableSort` (kit d'interface) et testable isolément.
  */
 
 /** Cellule considérée comme vide : toujours reléguée en fin de liste. */
-export const isEmptyCell = (v) => v == null || v === "" || v === "—";
+export const isEmptyCell = (v) => v == null || v === "" || v === "-";
 
 /** Comparaison naturelle : nombres, booléens, puis texte (ordre français). */
 export function compareValues(a, b) {

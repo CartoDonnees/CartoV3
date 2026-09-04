@@ -142,7 +142,7 @@ function DistrictTooltip() {
   );
 }
 
-/** Chiffre du bandeau de survol — typographie des indicateurs du kit. */
+/** Chiffre du bandeau de survol - typographie des indicateurs du kit. */
 function Stat({ label, value, accent }) {
   return (
     <div>

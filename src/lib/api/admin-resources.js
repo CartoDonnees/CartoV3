@@ -385,7 +385,7 @@ export const syncs = createCrud({
     code: s.code,
     entityType: s.entityType,
     dateUpdate: s.dateUpdate,
-    author: s.user ? `${s.user.firstName ?? ""} ${s.user.lastName ?? ""}`.trim() || s.user.email : "—",
+    author: s.user ? `${s.user.firstName ?? ""} ${s.user.lastName ?? ""}`.trim() || s.user.email : "-",
     createdAt: s.createdAt,
   }),
   parseCreate: () => { throw new ApiError("Les synchronisations sont créées par l'import du référentiel.", "READ_ONLY", 405); },
@@ -427,7 +427,7 @@ export const downloads = createCrud({
   model: "download",
   readRoles: ["ADMIN", "SUPERVISOR", "CONTROLLER"],
   findMany: { orderBy: { createdAt: "desc" }, take: 200, include: { user: { select: { email: true } } } },
-  serialize: (d) => ({ code: d.code, type: d.type, domain: d.domain, user: d.user?.email ?? "—", createdAt: d.createdAt }),
+  serialize: (d) => ({ code: d.code, type: d.type, domain: d.domain, user: d.user?.email ?? "-", createdAt: d.createdAt }),
   parseCreate: () => { throw new ApiError("Journal alimenté automatiquement.", "READ_ONLY", 405); },
   parseUpdate: () => { throw new ApiError("Journal non modifiable.", "READ_ONLY", 405); },
 });

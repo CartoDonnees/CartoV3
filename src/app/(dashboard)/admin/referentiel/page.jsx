@@ -119,7 +119,7 @@ export default function ReferentielPage() {
         {result && (
           <div style={{ marginTop: "0.85rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.82rem", fontWeight: 700, color: "var(--artci-green-700)" }}>
-              <CheckCircle2 size={15} /> Référentiel synchronisé — {result.date}
+              <CheckCircle2 size={15} /> Référentiel synchronisé - {result.date}
             </div>
             <div className={s.tableScroll} style={{ marginTop: "0.5rem" }}>
               <table className={s.table}>
@@ -132,7 +132,7 @@ export default function ReferentielPage() {
                       <td className={s.cellStrong}>{l.label}</td>
                       <td style={{ textAlign: "right" }}>{l.created.toLocaleString("fr-FR")}</td>
                       <td style={{ textAlign: "right" }} className={l.duplicates ? s.cellStrong : s.cellMuted}>
-                        {l.duplicates ? l.duplicates.toLocaleString("fr-FR") : "—"}
+                        {l.duplicates ? l.duplicates.toLocaleString("fr-FR") : "-"}
                       </td>
                       <td style={{ textAlign: "right" }}>{l.total.toLocaleString("fr-FR")}</td>
                     </tr>
@@ -163,11 +163,11 @@ export default function ReferentielPage() {
         subtitle={
           level.locality
             ? "Utilisez la recherche pour retrouver une localité (liste bornée aux 300 premières)."
-            : `Découpage administratif — ${level.label.toLowerCase()}.`
+            : `Découpage administratif - ${level.label.toLowerCase()}.`
         }
         endpoint={level.endpoint}
         singular={level.singular}
-        createLabel={`Ajouter — ${level.singular}`}
+        createLabel={`Ajouter - ${level.singular}`}
         toForm={(r) => ({
           name: r.name,
           parentCode: r.parentCode || "",

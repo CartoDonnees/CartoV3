@@ -13,7 +13,7 @@ export default async function OperatorDashboard() {
         title="Espace opérateur"
         subtitle={
           operator
-            ? `Couverture du réseau ${operator} — statistiques, historique et zones non couvertes.`
+            ? `Couverture du réseau ${operator} - statistiques, historique et zones non couvertes.`
             : "Aucun opérateur n'est rattaché à ce compte."
         }
       />

@@ -197,7 +197,7 @@ export default function ResourceManager({
                   <tr key={row.code}>
                     {columns.map((c) => (
                       <td key={c.key} className={c.strong ? s.cellStrong : c.muted ? s.cellMuted : ""}>
-                        {c.render ? c.render(row) : row[c.key] ?? "—"}
+                        {c.render ? c.render(row) : row[c.key] ?? "-"}
                       </td>
                     ))}
                     {!readOnly && (
@@ -222,7 +222,7 @@ export default function ResourceManager({
 
       {editing && (
         <Modal
-          title={`${editing.mode === "create" ? "Ajouter" : "Modifier"} — ${singular}`}
+          title={`${editing.mode === "create" ? "Ajouter" : "Modifier"} - ${singular}`}
           onClose={() => !saving && setEditing(null)}
           wide={wideModal}
           footer={
@@ -298,7 +298,7 @@ function Field({ field, value, options, onChange, mode }) {
         <textarea className={s.textarea} value={v} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
       ) : type === "select" ? (
         <select className={s.select} value={v} onChange={(e) => onChange(e.target.value)}>
-          <option value="">— Choisir —</option>
+          <option value="">- Choisir -</option>
           {options.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}

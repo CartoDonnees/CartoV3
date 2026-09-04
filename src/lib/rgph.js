@@ -23,7 +23,7 @@ export const isBreak = (a, b) => rgphFor(a).label !== rgphFor(b).label;
 
 /**
  * Première période (dans une liste triée du plus ancien au plus récent) qui
- * inaugure un nouveau référentiel — sert à marquer la rupture sur les courbes.
+ * inaugure un nouveau référentiel - sert à marquer la rupture sur les courbes.
  */
 export function breakPoint(dates = []) {
   for (let i = 1; i < dates.length; i++) {

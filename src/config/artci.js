@@ -24,25 +24,54 @@ export const OPERATORS = [
 /** Autres réseaux de fibre optique (opérateurs d'infrastructure). */
 export const FIBER_PROVIDERS = [
   { code: "ANSUT", name: "ANSUT", color: "#ef4444", km: 5207 },
-  { code: "AWALE", name: "Awalé", color: "#a855f7", km: 2388 },
+  { code: "AWALE", name: "Awalé", color: "#056c11", km: 2388 },
 ];
 
 /** Réseau routier / ferroviaire (couches infrastructure). */
+/**
+ * Réseau routier et ferroviaire.
+ *
+ * Les trois classes routières n'existent dans aucun fichier du projet : elles
+ * sont tracées à partir du réseau routier du fond de carte Mapbox (couche
+ * vectorielle « road »), filtré sur le champ `class`. Le chemin de fer, lui,
+ * vient du fichier ivoirien `railways.geojson`, plus précis que le fond.
+ */
 export const ROAD_LAYERS = [
-  { key: "highway", label: "Autoroutes", color: "#f59e0b", dashed: false },
-  { key: "nationalRoad", label: "Routes nationales", color: "#ef4444", dashed: false },
-  { key: "track", label: "Pistes", color: "#a16207", dashed: true },
-  { key: "railway", label: "Chemins de fer", color: "#334155", dashed: true },
+  {
+    key: "highway", label: "Autoroutes", color: "#f59e0b", dashed: false,
+    classes: ["motorway", "motorway_link"], width: 2.6,
+  },
+  {
+    key: "nationalRoad", label: "Routes nationales", color: "#ef4444", dashed: false,
+    classes: ["trunk", "trunk_link", "primary", "primary_link"], width: 1.8,
+  },
+  {
+    key: "track", label: "Pistes", color: "#a16207", dashed: true,
+    classes: ["track"], width: 1.1,
+  },
+  // Tracé national, servi par /api/v1/geo (pas de classe Mapbox).
+  { key: "railway", label: "Chemins de fer", color: "#334155", dashed: true, width: 1.5 },
 ];
 
 /**
- * Couches de fibre optique dessinées sur la carte — source unique partagée
+ * Couches de fibre optique dessinées sur la carte - source unique partagée
  * par le gestionnaire de couches et la légende des exports.
  */
 export const FIBER_LAYERS = [
   { ctrl: "showFiberORANGE", op: "orange", label: "Fibre optique Orange", color: "#f47b20" },
   { ctrl: "showFiberMTN", op: "mtn", label: "Fibre optique MTN", color: "#ffcc00" },
   { ctrl: "showFiberAwale", op: "awale", label: "Fibre optique Awalé", color: "#056c11" },
+  {
+    // Réseau national haut débit de l'ANSUT. La version 2 l'affichait depuis un
+    // jeu de tuiles Mapbox limité aux zooms 8 à 14, donc invisible à l'échelle
+    // du pays. Le tracé a été extrait de ces tuiles vers un GeoJSON local
+    // (voir `dataFiles/.../fiber_ansut.geojson`) : il s'affiche désormais à
+    // tous les niveaux de zoom, comme les trois autres réseaux.
+    ctrl: "showFiberAnsut",
+    op: "ansut",
+    label: "Fibre optique ANSUT (RNHD)",
+    color: "#ef4444",
+  },
 ];
 
 /** Tracé des limites administratives sur la carte (couleur et épaisseur). */
@@ -84,7 +113,7 @@ export const TECHNOLOGIES = [
   { code: "4G", name: "4G", color: "#8b5cf6", desc: "Internet mobile très haut débit." },
 ];
 
-/** Couleurs par technologie (couverture des localités) — alignées sur les icônes carte. */
+/** Couleurs par technologie (couverture des localités) - alignées sur les icônes carte. */
 export const TECH_COLORS = { "2G": "#4eda03", "3G": "#E21273", "4G": "#8b5cf6" };
 /** Priorité d'affichage : la meilleure technologie disponible prime (4G > 3G > 2G). */
 export const TECH_PRIORITY = ["4G", "3G", "2G"];

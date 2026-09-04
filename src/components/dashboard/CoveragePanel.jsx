@@ -74,7 +74,7 @@ export default function CoveragePanel({ showOperators = true }) {
 
       {/* Vue opérateur unique */}
       {isOperator && (
-        <Card title={`Couverture population — ${st.operator}`}>
+        <Card title={`Couverture population - ${st.operator}`}>
           <div className={`${s.grid} ${s.gridStats}`} style={{ marginBottom: "1rem" }}>
             <StatCard value={`${st.opPerPop.toFixed(1)}%`} label="Population couverte" hint={`${nf(st.opPop)} habitants`} color={OP_COLOR[st.operator] || "var(--artci-green)"} />
           </div>

@@ -59,7 +59,7 @@ export function qosKeys(p = {}) {
 /** Logo de l'opérateur, comme dans l'en-tête de ligne de la version 2. */
 const OP_LOGO = Object.fromEntries(OPS.map((op) => [op, `/images/operateurs/${op.toLowerCase()}.png`]));
 
-/** Coche verte / croix rouge — pictogrammes de la version 2. */
+/** Coche verte / croix rouge - pictogrammes de la version 2. */
 const mark = (ok) =>
   `<img class="lh__mark" src="/images/icons/${ok ? "success" : "cancel"}.png" alt="${ok ? "oui" : "non"}" />`;
 
@@ -133,7 +133,7 @@ function qosTable(qos) {
     .map((s) => {
       const cells = OPS.map((op) => {
         const c = qosCompliance(qos[s.key], s.key, op);
-        if (!c) return `<td class="lh__qos-na">—</td>`;
+        if (!c) return `<td class="lh__qos-na">-</td>`;
         // Vert si tous les seuils sont tenus, orange en deçà, rouge si aucun.
         const tone = c.ok === c.total ? "ok" : c.ok === 0 ? "ko" : "mid";
         return `<td><span class="lh__qos lh__qos--${tone}">${c.ok}/${c.total}</span></td>`;
@@ -143,7 +143,7 @@ function qosTable(qos) {
     .join("");
 
   return (
-    `<div class="lh__sub">Qualité de service — seuils tenus</div>` +
+    `<div class="lh__sub">Qualité de service - seuils tenus</div>` +
     `<table class="lh__grid lh__grid--qos"><thead>${head}</thead><tbody>${body}</tbody></table>`
   );
 }
@@ -166,7 +166,7 @@ export function localityPopupHtml(p = {}, { layerId, qos = null, campaign = null
     `<div class="lh__name">${esc(p.ADM4_FR) || "Localité"}</div>` +
     (path ? `<div class="lh__path">${esc(path)}</div>` : "") +
     `<div class="lh__pop"><b>${nf.format(Number(p.pop) || 0)}</b> habitants</div>` +
-    (white ? `<div class="lh__white">Zone blanche — ni couverture ni prévision</div>` : "") +
+    (white ? `<div class="lh__white">Zone blanche - ni couverture ni prévision</div>` : "") +
     (!white && hasCoverage(p) ? coverageTable(p) + forecastNote(p) : "") +
     (audited
       ? qosTable(qos) +

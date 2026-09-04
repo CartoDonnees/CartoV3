@@ -123,7 +123,7 @@ export function buildIndex(date) {
 }
 
 /**
- * Taux de couverture d'une entité pour un jeu d'opérateurs/technologies —
+ * Taux de couverture d'une entité pour un jeu d'opérateurs/technologies -
  * même logique que `computeRate` (max sur les opérateurs, moyenne sur les
  * technologies), mais à partir des statistiques déjà projetées.
  */

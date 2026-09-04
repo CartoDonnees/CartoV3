@@ -316,7 +316,7 @@ export function ReportTool() {
               <div className="grid gap-4 md:grid-cols-2">
               <Field label="Vos coordonnées (facultatif)">
                 <div className="space-y-1.5">
-                  <IconInput icon={Phone} type="tel" placeholder="Téléphone — ex. 07 00 00 00 00"
+                  <IconInput icon={Phone} type="tel" placeholder="Téléphone - ex. 07 00 00 00 00"
                     value={form.phone} onChange={(v) => setForm((f) => ({ ...f, phone: v }))} />
                   <IconInput icon={Mail} type="email" placeholder="Adresse e-mail"
                     value={form.email} onChange={(v) => setForm((f) => ({ ...f, email: v }))} />

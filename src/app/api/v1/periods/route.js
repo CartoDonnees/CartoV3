@@ -9,7 +9,7 @@ function frLabel(dateStr) {
 }
 
 /**
- * GET /api/v1/periods?type=COV — périodes semestrielles (depuis la base).
+ * GET /api/v1/periods?type=COV - périodes semestrielles (depuis la base).
  * Triées de la plus récente à la plus ancienne.
  */
 export const GET = withErrorHandling(async (request) => {

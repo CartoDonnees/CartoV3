@@ -799,7 +799,7 @@ function CheckRow({
   );
 }
 
-/** Bouton radio (sélection unique) — utilisé pour le niveau de choroplèthe. */
+/** Bouton radio (sélection unique) - utilisé pour le niveau de choroplèthe. */
 function RadioRow({ label, checked, onSelect, dot }) {
   return (
     <button

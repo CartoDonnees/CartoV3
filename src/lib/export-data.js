@@ -1,5 +1,5 @@
 /**
- * Exportation des données de couverture — GeoJSON, Excel et PDF.
+ * Exportation des données de couverture - GeoJSON, Excel et PDF.
  * Le format des colonnes reprend celui de la version 2 :
  * CODE, LOCALITE, SOUS-PREFECTURE, DEPARTEMENT, REGION, DISTRICT, POPULATION,
  * LATITUDE, LONGITUDE puis « COUVERTURE {technologie} {opérateur} ».
@@ -186,7 +186,7 @@ export async function exportExcel(rows, columns, base, sheetName = "Données") {
   if (!rows.length) throw new Error("Aucune donnée à exporter.");
   const ExcelJS = (await import("exceljs")).default ?? (await import("exceljs"));
   const wb = new ExcelJS.Workbook();
-  wb.creator = "ARTCI — CARTODONNEES";
+  wb.creator = "ARTCI - CARTODONNEES";
   wb.created = new Date();
   const ws = wb.addWorksheet(sheetName.slice(0, 31));
 
@@ -240,7 +240,7 @@ export async function exportPdf(rows, columns, base, title, subtitle) {
       doc.setFontSize(8);
       doc.setTextColor(130);
       doc.text(
-        `ARTCI — CARTODONNEES · page ${page}`,
+        `ARTCI - CARTODONNEES · page ${page}`,
         data.settings.margin.left,
         doc.internal.pageSize.getHeight() - 14,
       );

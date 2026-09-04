@@ -176,7 +176,7 @@ export function CoverageDeclaration({ operator = null }) {
                             <button
                               key={f.key}
                               onClick={() => toggle(r.code, op, t, f.key)}
-                              title={`${f.label} — ${op} ${t}`}
+                              title={`${f.label} - ${op} ${t}`}
                               style={{
                                 width: 16, height: 16, marginRight: 2, borderRadius: 4, cursor: "pointer",
                                 border: "1px solid var(--border)",
@@ -305,7 +305,7 @@ function ExcelImport({ periodCode, periods, operator, onClose }) {
       <p className={s.modalText}>
         Le fichier doit comporter une colonne <b>code</b> (code officiel de la localité, ex. C0001)
         et, pour chaque couple opérateur/technologie, les colonnes
-        <b> cov…</b> (couverture), <b>pres…</b> (station) et <b>prev…</b> (prévision) —
+        <b> cov…</b> (couverture), <b>pres…</b> (station) et <b>prev…</b> (prévision) -
         par exemple <code>cov4GORANGE</code>. Les valeurs acceptées sont 1/0, oui/non, vrai/faux.
       </p>
 
@@ -332,7 +332,7 @@ function ExcelImport({ periodCode, periods, operator, onClose }) {
       {result && (
         <div style={{ marginTop: "1rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontWeight: 700, color: "var(--artci-green-700)" }}>
-            <CheckCircle2 size={16} /> Import terminé — {result.period}
+            <CheckCircle2 size={16} /> Import terminé - {result.period}
           </div>
           <ul style={{ marginTop: "0.5rem", fontSize: "0.85rem", lineHeight: 1.7 }}>
             <li>Lignes lues : <b>{result.rows}</b></li>

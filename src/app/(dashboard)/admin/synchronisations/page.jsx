@@ -2,7 +2,7 @@
 
 import ResourceManager from "@/components/dashboard/ResourceManager";
 
-const fr = (d) => (d ? new Date(d).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" }) : "—");
+const fr = (d) => (d ? new Date(d).toLocaleString("fr-FR", { dateStyle: "medium", timeStyle: "short" }) : "-");
 
 export default function SyncsPage() {
   return (

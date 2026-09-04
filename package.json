@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node prisma/seed.mjs",
+    "db:migrate": "prisma migrate deploy",
+    "db:setup": "prisma migrate deploy && prisma generate && npm run seed"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.118.0",

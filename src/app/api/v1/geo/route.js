@@ -43,7 +43,7 @@ const DATED_KINDS = {
   whiteLocality: (d) => `whiteLocality_${d}.geojson`,
   stats: (d) => `statsnationales_${d}.json`,
 };
-const FIBER_OPS = new Set(["orange", "mtn", "awale"]);
+const FIBER_OPS = new Set(["orange", "mtn", "awale", "ansut"]);
 
 /**
  * GET /api/v1/geo?kind=district&date=2024-12-31
@@ -86,7 +86,7 @@ export async function GET(request) {
   } else if (kind === "railways") {
     filename = "railways.geojson";
   } else if (kind === "state") {
-    // Limite (bordure) de l'État de Côte d'Ivoire — non datée, dans dataFiles/init.
+    // Limite (bordure) de l'État de Côte d'Ivoire - non datée, dans dataFiles/init.
     baseDir = INIT_DIR;
     filename = "state_admin.geojson";
   } else if (kind === "fiber") {

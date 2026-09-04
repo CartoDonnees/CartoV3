@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ok, withErrorHandling } from "@/lib/api/response";
 
-/** GET /api/v1/newsletters — bulletins d'informations publiés. */
+/** GET /api/v1/newsletters - bulletins d'informations publiés. */
 export const GET = withErrorHandling(async () => {
   const rows = await prisma.newsletter.findMany({
     where: { published: true },

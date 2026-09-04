@@ -33,7 +33,7 @@ export function ShareMenu() {
 
   const dims = renderSize(size, orientation, dpi);
   const megapixels = estimateMegapixels(size, orientation, dpi);
-  // Légende des couches réellement affichées — jointe au PDF.
+  // Légende des couches réellement affichées - jointe au PDF.
   const legend = buildLegend(useMapStore.getState());
   const legendCount = legendItemCount(legend);
 
@@ -46,7 +46,7 @@ export function ShareMenu() {
         fileName: exportFileName(periodDate, format, size),
         legend: buildLegend(useMapStore.getState()),
         featureStates: useMapStore.getState().choroplethStates,
-        title: "CARTODONNEES — Observatoire de la couverture, ARTCI",
+        title: "CARTODONNEES - Observatoire de la couverture, ARTCI",
         subtitle: `Période : ${periodLabel(periodDate)} · Référentiel : ${rgphFor(periodDate).label}`,
       });
     } catch (e) {
@@ -71,7 +71,7 @@ export function ShareMenu() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      setError("Copie impossible — le presse-papiers est refusé par le navigateur.");
+      setError("Copie impossible - le presse-papiers est refusé par le navigateur.");
     }
   };
 
@@ -136,7 +136,7 @@ export function ShareMenu() {
               {megapixels > 15 && !dims.clamped && (
                 <p className="mb-2 flex items-start gap-1.5 text-[10px] leading-relaxed text-artci-orange">
                   <AlertTriangle size={12} className="mt-px shrink-0" />
-                  Rendu volumineux ({megapixels.toFixed(0)} Mpx) — le calcul peut prendre plusieurs secondes.
+                  Rendu volumineux ({megapixels.toFixed(0)} Mpx) - le calcul peut prendre plusieurs secondes.
                 </p>
               )}
 

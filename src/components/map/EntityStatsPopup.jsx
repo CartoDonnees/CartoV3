@@ -124,7 +124,7 @@ export function EntityStatsPopup() {
 
 /**
  * Tableau croisé opérateurs × technologies : couverture et stations radio.
- * Localité → ✓ / — (drapeaux binaires). Niveau admin → % de population couverte.
+ * Localité → ✓ / - (drapeaux binaires). Niveau admin → % de population couverte.
  */
 /**
  * Réponse directe quand la demande cible un opérateur et/ou une technologie
@@ -241,7 +241,7 @@ function CoverageMatrix({ matrix, isLocality, focus }) {
   );
 }
 
-/** Pastille ✓ (couvert) / — (non couvert). */
+/** Pastille ✓ (couvert) / - (non couvert). */
 function Flag({ on }) {
   return on ? (
     <span className="inline-grid h-5 w-5 place-items-center rounded-full bg-artci-green text-white"><Check size={12} strokeWidth={3} /></span>

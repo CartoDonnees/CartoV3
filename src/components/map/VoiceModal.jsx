@@ -246,7 +246,7 @@ export function VoiceModal() {
               ) : (
                 <div className="mb-4 flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2.5 text-[11px] text-muted">
                   <Keyboard size={14} className="shrink-0" />
-                  Dictée non prise en charge par ce navigateur — saisissez votre demande ci-dessous.
+                  Dictée non prise en charge par ce navigateur - saisissez votre demande ci-dessous.
                 </div>
               )}
 
@@ -262,7 +262,7 @@ export function VoiceModal() {
                     }
                   }}
                   rows={2}
-                  placeholder={supported ? "Votre demande apparaîtra ici — vous pouvez la corriger" : "Saisissez votre demande…"}
+                  placeholder={supported ? "Votre demande apparaîtra ici - vous pouvez la corriger" : "Saisissez votre demande…"}
                   className="w-full resize-none bg-transparent px-3.5 py-3 text-[15px] leading-relaxed text-foreground outline-none placeholder:text-[13px] placeholder:italic placeholder:text-muted"
                 />
                 <div className="flex items-center gap-2 border-t border-border/60 px-3.5 py-2">
@@ -317,7 +317,7 @@ export function VoiceModal() {
                     )}
                   </div>
                   <p className="mt-1 text-[15px] font-bold leading-snug">
-                    {interpreted.query.normalized || interpreted.query.entity || "—"}
+                    {interpreted.query.normalized || interpreted.query.entity || "-"}
                   </p>
                   {(interpreted.query.operators?.length > 0 || interpreted.query.technologies?.length > 0 || interpreted.scope === "national") && (
                     <div className="mt-2 flex flex-wrap items-center gap-1">

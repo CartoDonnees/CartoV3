@@ -1,5 +1,5 @@
 /**
- * Briques du back-office — simples adaptations des primitives communes
+ * Briques du back-office - simples adaptations des primitives communes
  * (`@/components/ui/kit`) afin que l'administration, les tableaux de bord
  * publics et la carte partagent exactement le même design.
  */

@@ -8,7 +8,7 @@ export const STYLE_URLS = {
 };
 
 /**
- * Cadrage initial de référence — celui de la carte d'accueil.
+ * Cadrage initial de référence - celui de la carte d'accueil.
  * Le comparateur réutilise exactement les mêmes valeurs pour ouvrir sur la
  * même vue. Des bornes trop serrées forceraient Mapbox à resserrer le zoom.
  */
@@ -30,7 +30,7 @@ export const CI_BOUNDS = [
 ];
 
 /**
- * Emprise réelle du territoire ivoirien — sert à cadrer la vue sur le pays
+ * Emprise réelle du territoire ivoirien - sert à cadrer la vue sur le pays
  * (fitBounds), quelle que soit la taille de la fenêtre.
  */
 export const CI_EXTENT = [

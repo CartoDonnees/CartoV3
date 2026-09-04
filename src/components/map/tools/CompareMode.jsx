@@ -376,7 +376,7 @@ function CoverageStat({ data, op, techs, dataV }) {
   const pct = useMemo(() => coveragePct(data, op, techs), [op, techs, dataV]);
   return (
     <span className="shrink-0 rounded-full bg-artci-green/12 px-2 py-0.5 text-xs font-bold text-artci-green-700">
-      {techs.length ? `${pct.toFixed(1)}%` : "—"}
+      {techs.length ? `${pct.toFixed(1)}%` : "-"}
     </span>
   );
 }

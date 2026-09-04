@@ -4,7 +4,7 @@ import { guard } from "@/lib/auth-server";
 
 const REPORT_STATUS = ["PENDING", "IN_REVIEW", "RESOLVED", "REJECTED"];
 
-/** PATCH /api/v1/admin/reports/[code] — met à jour le statut d'un signalement. */
+/** PATCH /api/v1/admin/reports/[code] - met à jour le statut d'un signalement. */
 export const PATCH = withErrorHandling(async (request, ctx) => {
   const g = await guard(["ADMIN", "SUPERVISOR", "CONTROLLER"]);
   if (g.response) return g.response;

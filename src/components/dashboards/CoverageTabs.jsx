@@ -43,7 +43,7 @@ const TABS = [
 
 
 /**
- * Corps du tableau de bord de couverture — partagé par la page publique et les
+ * Corps du tableau de bord de couverture - partagé par la page publique et les
  * espaces admin / superviseur / opérateur (la version 2 déclinait les mêmes
  * vues par rôle). `operator` restreint l'affichage à un seul opérateur.
  */
@@ -126,8 +126,8 @@ function HistoryTab({ history, operator = null }) {
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi icon={CalendarClock} value={history.length} label="Périodes publiées" hint={brkLabel ? `Rupture en ${brkLabel}` : null} />
-        <Kpi icon={Users} value={formatPercent(first.Global)} label={`Couverture — ${first.label}`} hint={first.rgph} color="#94a3b8" />
-        <Kpi icon={Users} value={formatPercent(last.Global)} label={`Couverture — ${last.label}`} hint={last.rgph} />
+        <Kpi icon={Users} value={formatPercent(first.Global)} label={`Couverture - ${first.label}`} hint={first.rgph} color="#94a3b8" />
+        <Kpi icon={Users} value={formatPercent(last.Global)} label={`Couverture - ${last.label}`} hint={last.rgph} />
         <Kpi
           icon={TrendingUp}
           value={`${delta >= 0 ? "+" : ""}${delta.toFixed(1)} pt`}
@@ -137,7 +137,7 @@ function HistoryTab({ history, operator = null }) {
         />
       </div>
 
-      <Panel title="Couverture population — global et par technologie">
+      <Panel title="Couverture population - global et par technologie">
         <ResponsiveContainer width="100%" height={280}>
           <LineChart data={history} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
@@ -208,7 +208,7 @@ function WhiteTab({ date, stats }) {
     if (!white?.length) return [];
     const map = new Map();
     for (const f of white) {
-      const k = f.properties?.ADM0_FR || "—";
+      const k = f.properties?.ADM0_FR || "-";
       const cur = map.get(k) || { name: k, count: 0, pop: 0 };
       cur.count += 1;
       cur.pop += Number(f.properties?.pop) || 0;
@@ -354,7 +354,7 @@ function EntitiesTab({ date }) {
                             c.align === "left" ? "font-semibold" : "text-right tabular-nums"
                           } ${c.key === "parent" ? "font-normal text-muted" : ""}`}
                         >
-                          {c.fmt ? c.fmt(r[c.key]) : r[c.key] || "—"}
+                          {c.fmt ? c.fmt(r[c.key]) : r[c.key] || "-"}
                         </td>
                       ))}
                     </tr>

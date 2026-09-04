@@ -33,7 +33,7 @@ const isMeasureColumn = (c) => /^COUVERTURE |^(Te|Tbd|Tc|Tq|TeS|TedS|Tr3|TeRd|Ts
 
 /**
  * Aperçu des données avant téléchargement (comme en version 2) : tableau paginé,
- * recherche, filtres de colonnes et — en mode personnalisé — descente pas à pas
+ * recherche, filtres de colonnes et - en mode personnalisé - descente pas à pas
  * dans le découpage administratif, avec extraction possible à chaque étape.
  */
 export function ExportPreviewModal() {
@@ -42,7 +42,7 @@ export function ExportPreviewModal() {
   const mapPeriod = useMapStore((s) => s.periodDate);
   const periods = useMapStore((s) => s.periods);
 
-  // Semestre de l'extraction — indépendant de la carte, initialisé sur celui affiché.
+  // Semestre de l'extraction - indépendant de la carte, initialisé sur celui affiché.
   const [periodDate, setPeriodDate] = useState(mapPeriod);
 
   const [raw, setRaw] = useState(null);
@@ -147,7 +147,7 @@ export function ExportPreviewModal() {
     [table.columns, ops, techs, isQos],
   );
 
-  // Colonne portant l'entité parente (regroupement) — absente à la racine.
+  // Colonne portant l'entité parente (regroupement) - absente à la racine.
   const parentCol = isCustom && levelIndex > 0 ? CHAIN[levelIndex - 1].col : null;
 
   const filtered = useMemo(() => {
@@ -233,10 +233,10 @@ export function ExportPreviewModal() {
       ? `${level.key}_${(scopeLabel || "").replace(/\s+/g, "-")}_${periodDate}`
       : `${req?.kind}_${periodDate}`;
   const title = isQos
-    ? `${req?.title} — ${service} · ${campaign}`
+    ? `${req?.title} - ${service} · ${campaign}`
     : isCustom
-      ? `${level.plural} — ${scopeLabel} (${periodDate})`
-      : `${req?.title} — ${periodDate}`;
+      ? `${level.plural} - ${scopeLabel} (${periodDate})`
+      : `${req?.title} - ${periodDate}`;
 
   const doExport = async (format) => {
     setBusy(format);
@@ -294,10 +294,10 @@ export function ExportPreviewModal() {
               </span>
               <div className="min-w-0 flex-1">
                 <h2 className="truncate text-[15px] font-extrabold leading-tight tracking-tight">
-                  {isCustom ? `Extraction personnalisée — ${level.plural}` : req.title}
+                  {isCustom ? `Extraction personnalisée - ${level.plural}` : req.title}
                 </h2>
                 <p className="text-[11px] text-muted">
-                  Aperçu avant téléchargement · {isQos ? `${service} · ${campaign || "—"}` : periodDate}
+                  Aperçu avant téléchargement · {isQos ? `${service} · ${campaign || "-"}` : periodDate}
                 </p>
               </div>
               <button
@@ -342,7 +342,7 @@ export function ExportPreviewModal() {
                 <span className="ml-auto flex items-center gap-1 text-[10.5px] text-muted">
                   <CornerDownRight size={11} />
                   Étape {levelIndex + 1}/{CHAIN.length} · {level.plural}
-                  {canDrill && " — cochez une ou plusieurs entités"}
+                  {canDrill && " - cochez une ou plusieurs entités"}
                 </span>
               </div>
             )}
@@ -447,7 +447,7 @@ export function ExportPreviewModal() {
                           <td colSpan={columns.length + (isCustom ? 1 : 0)} className="border-b border-artci-green/25 px-2 py-1.5">
                             <span className="flex items-center gap-1.5 text-[11px] font-extrabold text-artci-green-700">
                               <CornerDownRight size={11} />
-                              {CHAIN[levelIndex - 1].label} : {parent || "—"}
+                              {CHAIN[levelIndex - 1].label} : {parent || "-"}
                               <span className="font-semibold text-muted">
                                 ({groupSize} {level.plural.toLowerCase()}{continued ? ", suite" : ""})
                               </span>
@@ -474,7 +474,7 @@ export function ExportPreviewModal() {
                         )}
                         {columns.map((c) => (
                           <td key={c} className="whitespace-nowrap border-b border-border/50 px-2 py-1.5">
-                            {r[c] ?? "—"}
+                            {r[c] ?? "-"}
                           </td>
                         ))}
                       </tr>

@@ -23,7 +23,7 @@ export default function NewslettersPage() {
       })}
       columns={[
         { key: "title", label: "Titre", strong: true },
-        { key: "categoryTitle", label: "Catégorie", render: (r) => r.categoryTitle || "—" },
+        { key: "categoryTitle", label: "Catégorie", render: (r) => r.categoryTitle || "-" },
         { key: "published", label: "État", render: (r) => <Badge tone={r.published ? "green" : "gray"}>{r.published ? "Publié" : "Brouillon"}</Badge> },
         { key: "likes", label: "J'aime" },
       ]}

@@ -111,7 +111,7 @@ export function MapControls() {
           <span className={styles.sep} />
           <Ctrl icon={<Box size={18} />} label="Vue 3D" onClick={toggle3D} active={is3D} />
         </div>
-        {/* Rotation 360° — disponible en vue 3D */}
+        {/* Rotation 360° - disponible en vue 3D */}
         <AnimatePresence>
           {is3D && (
             <motion.div
@@ -139,7 +139,7 @@ export function MapControls() {
                     <Compass size={18} />
                   </span>
                 }
-                label={`Orientation ${Math.round(((bearing % 360) + 360) % 360)}° — revenir au nord`}
+                label={`Orientation ${Math.round(((bearing % 360) + 360) % 360)}° - revenir au nord`}
                 onClick={resetNorth}
               />
             </motion.div>

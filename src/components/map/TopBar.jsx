@@ -114,7 +114,7 @@ export function TopBar() {
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setFocus(true)}
             onBlur={() => setTimeout(() => setFocus(false), 150)}
-            placeholder="Rechercher une localité, région, département…"
+            placeholder="Rechercher une localité, district, région, département…"
             className="w-full bg-transparent text-sm outline-none placeholder:text-muted"
           />
           {searching && <Loader2 size={15} className="shrink-0 animate-spin text-muted" />}
