@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CARTODONNEES V3
 
-## Getting Started
+Observatoire cartographique de la couverture des réseaux de télécommunications
+et de la qualité de service — ARTCI, Côte d'Ivoire.
 
-First, run the development server:
+## Mise en service de la base de données
+
+### Base vierge
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run db:setup
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Enchaîne les trois étapes : application des migrations, génération du client
+Prisma, puis peuplement (opérateurs, technologies, périodes, comptes de
+démonstration, catalogue de problèmes, bulletins).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Les étapes séparées si besoin :
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run db:migrate   # prisma migrate deploy
+npx prisma generate
+npm run seed         # node prisma/seed.mjs — rejouable sans risque
+```
 
-## Learn More
+### Base déjà en service, construite avec `prisma db push`
 
-To learn more about Next.js, take a look at the following resources:
+Une base montée avec `db push` ne porte aucun historique de migration. Ne pas
+lui appliquer les migrations — son schéma est déjà à jour — mais les déclarer
+comme appliquées, une seule fois :
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npx prisma migrate resolve --applied 20260713114214_init
+npx prisma migrate resolve --applied 20260903120000_sync_schema
+npx prisma migrate status   # doit afficher « Database schema is up to date! »
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Sans cette étape, `prisma migrate deploy` tenterait de rejouer des
+modifications déjà présentes et échouerait.
 
-## Deploy on Vercel
+## Variables d'environnement
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`DATABASE_URL` dans `.env`. Les outils lancés hors Next.js (CLI Prisma, script
+de peuplement) chargent ce fichier via `prisma/load-env.mjs` ; une variable
+déjà définie dans l'environnement reste prioritaire.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Comptes de démonstration
+
+Créés par le peuplement, mot de passe commun `Passw0rd!` :
+
+| Rôle | Adresse |
+| --- | --- |
+| Administrateur | `admin@artci.ci` |
+| Superviseur | `superviseur@artci.ci` |
+| Contrôleur | `controleur@artci.ci` |
+| Opérateur | `orange@artci.ci`, `mtn@artci.ci`, `moov@artci.ci` |
+| Citoyen | `client@artci.ci`, `citoyen@artci.ci` |
+
+## Développement
+
+```bash
+npm run dev     # serveur de développement
+npm run build   # construction de production
+npm run lint
+```
