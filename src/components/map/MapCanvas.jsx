@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useMapStore } from "@/stores/map-store";
-import { computeRate, COVERAGE_COLOR } from "@/lib/coverage";
+import { computeRate, metricInfo, COVERAGE_COLOR } from "@/lib/coverage";
 import { getDistricts, getRegions, getDepartments, getSubPrefectures, getStateBoundary } from "@/lib/geodata";
 import { STYLE_URLS, CI_CENTER, CI_BOUNDS, CI_ZOOM, CI_MIN_ZOOM } from "@/config/mapStyles";
 
@@ -38,6 +38,7 @@ export function MapCanvas() {
   const technologies = useMapStore((s) => s.technologies);
   const showDistricts = useMapStore((s) => s.showDistricts);
   const coverageLevel = useMapStore((s) => s.coverageLevel);
+  const coverageMetric = useMapStore((s) => s.coverageMetric);
   const periodDate = useMapStore((s) => s.periodDate);
   const setMap = useMapStore((s) => s.setMap);
   const setActiveDistrict = useMapStore((s) => s.setActiveDistrict);
@@ -73,7 +74,7 @@ export function MapCanvas() {
       if (!map.getSource(srcId(cfg.key)) || !data) return;
       const rates = {};
       data.features.forEach((f) => {
-        const rate = computeRate(f.properties, st.operators, st.technologies);
+        const rate = computeRate(f.properties, st.operators, st.technologies, st.coverageMetric);
         rates[f.id] = rate;
         map.setFeatureState({ source: srcId(cfg.key), id: f.id }, { rate });
       });
@@ -115,7 +116,8 @@ export function MapCanvas() {
           level: cfg.label,
           pop: Number(f.properties.pop),
           locs: Number(f.properties.locs),
-          rate: computeRate(f.properties, st.operators, st.technologies),
+          rate: computeRate(f.properties, st.operators, st.technologies, st.coverageMetric),
+          rateLabel: metricInfo(st.coverageMetric).tooltip,
         });
       });
       map.on("mouseleave", fill, () => {
@@ -181,6 +183,13 @@ export function MapCanvas() {
             "text-color": "#0e1512",
             "text-halo-color": "rgba(255,255,255,.85)",
             "text-halo-width": 1.4,
+            /* Le libellé de l'entité survolée ressort légèrement.
+               Cette expression est AUSSI nécessaire techniquement : la source
+               porte des états d'entités (`rate`, `hover`) et Mapbox plante au
+               rendu si un calque symbole de cette source n'a aucune peinture
+               dépendante de l'état (sa liste `stateDependentLayers` est vide,
+               et il en lit malgré tout le premier élément). */
+            "text-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.88],
           },
         }, before);
       }
@@ -320,7 +329,7 @@ export function MapCanvas() {
     if (!map || !ready) return;
     if (map.syncLevels) map.syncLevels();
     else if (map.applyState) map.applyState();
-  }, [operators, technologies, showDistricts, coverageLevel, ready]);
+  }, [operators, technologies, showDistricts, coverageLevel, coverageMetric, ready]);
 
   return (
     <div className="absolute inset-0">

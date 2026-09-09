@@ -131,7 +131,7 @@ function DistrictTooltip() {
             )}
             <div className="text-sm font-extrabold tracking-tight">{d.name}</div>
             <div className="mt-2 grid grid-cols-3 gap-3 text-center">
-              <Stat label="Couverture" value={formatPercent(d.rate)} accent />
+              <Stat label={d.rateLabel || "Couverture"} value={formatPercent(d.rate)} accent />
               <Stat label="Population" value={formatCompact(d.pop)} />
               <Stat label="Localités" value={formatNumber(d.locs)} />
             </div>

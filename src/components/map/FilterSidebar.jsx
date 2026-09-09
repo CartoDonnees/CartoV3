@@ -27,7 +27,7 @@ import {
 import Link from "next/link";
 import { useMapStore, periodLabel } from "@/stores/map-store";
 import { getQosLocalities, getWhiteLocalities } from "@/lib/geodata";
-import { rgphFor } from "@/lib/rgph";
+import { RGPH_REFERENTIALS, rgphByCode, periodsForRgph } from "@/lib/rgph";
 import {
   OPERATORS,
   TECHNOLOGIES,
@@ -37,6 +37,7 @@ import {
   ADMIN_LIMITS,
 } from "@/config/artci";
 import { getStats } from "@/lib/geodata";
+import { COVERAGE_METRICS, metricInfo } from "@/lib/coverage";
 import { iconDataUri } from "@/lib/mapIcons";
 import { formatNumber, formatPercent, cn } from "@/lib/utils";
 
@@ -60,9 +61,13 @@ export function FilterSidebar() {
     setAdminLimit: setAdminLimitState,
     coverageLevel,
     setCoverageLevel,
+    coverageMetric,
+    setCoverageMetric,
     periodDate,
     setPeriod,
     periods,
+    rgphCode,
+    setRgph,
   } = useMapStore();
 
   return (
@@ -82,21 +87,18 @@ export function FilterSidebar() {
                   Couches & filtres
                 </h2>
                 <div className="mt-0.5 text-[10px] text-muted">
-                  <small>Référentiel de population de la période affichée</small>
+                  <small>Référentiel de population de l&apos;analyse</small>
                 </div>
               </div>
 
-                {/* Référentiel de population : déterminé par la période choisie
-                    (RGPH 2014 jusqu'en 2025, RGPH 2021 à partir de 2026). */}
-                <span
-                  className="shrink-0 rounded-lg bg-artci-green/10 px-2.5 py-1.5 text-[12px] font-bold text-artci-green-700"
-                  title={`Les statistiques du ${periodLabel(periodDate)} reposent sur le ${rgphFor(periodDate).label}`}
-                >
-                  {rgphFor(periodDate).label}
-                </span>
-              {/* <span className="rounded-full bg-artci-green/10 px-2 py-0.5 text-[10px] font-bold text-artci-green-700">
-                {periodLabel(periodDate).split(" ").slice(-2).join(" ")}
-              </span> */}
+              {/* Référentiel de population : pilote les périodes disponibles
+                  (RGPH 2014 avant le 30/06/2026, RGPH 2021 à partir de cette date). */}
+              <RgphSelect
+                value={rgphCode}
+                onChange={setRgph}
+                periods={periods}
+                periodDate={periodDate}
+              />
             </div>
 
             <div className="flex-1 space-y-2.5 overflow-y-auto p-2">
@@ -164,8 +166,29 @@ export function FilterSidebar() {
                   open={controls.covLevels}
                   onToggle={() => toggleControl("covLevels")}
                 >
+                  {/* Deux lectures du même territoire. Le découpage et les
+                      filtres restent communs : seule la série lue change. */}
+                  <div className="mb-1.5 flex gap-1 rounded-xl bg-surface-2/70 p-1">
+                    {COVERAGE_METRICS.map((m) => (
+                      <button
+                        key={m.key}
+                        type="button"
+                        onClick={() => setCoverageMetric(m.key)}
+                        aria-pressed={coverageMetric === m.key}
+                        className={cn(
+                          "flex-1 rounded-lg py-1.5 text-[11.5px] font-bold transition-colors",
+                          coverageMetric === m.key
+                            ? "brand-gradient text-white shadow-sm"
+                            : "text-muted hover:bg-surface-2",
+                        )}
+                      >
+                        {m.label}
+                      </button>
+                    ))}
+                  </div>
                   <div className="px-1 p-0 text-[10px] leading-relaxed text-muted">
-                    Carte thématique par découpage administratif.
+                    Part des <b className="font-semibold text-foreground">{metricInfo(coverageMetric).legend}</b>{" "}
+                    par découpage administratif.
                   </div>
                   <RadioRow
                     label="Aucun"
@@ -178,7 +201,7 @@ export function FilterSidebar() {
                       label={l.label}
                       checked={coverageLevel === l.key}
                       onSelect={() => setCoverageLevel(l.key)}
-                      dot={l.color}
+                      // dot={l.color}
                     />
                   ))}
                 </SubSection>
@@ -519,6 +542,44 @@ export function FilterSidebar() {
 }
 
 /* ---------- Primitives ---------- */
+
+/**
+ * Sélecteur du référentiel de population.
+ * Le choix pilote les périodes proposées : la règle RGPH ⇄ période vit dans
+ * `lib/rgph` et la réconciliation dans le store (`setRgph`). Un référentiel
+ * sans aucune période publiée reste visible mais non sélectionnable.
+ */
+function RgphSelect({ value, onChange, periods, periodDate }) {
+  const current = rgphByCode(value);
+  const count = periodsForRgph(periods, value).length;
+  return (
+    <label
+      className="relative shrink-0"
+      title={`Référentiel de population : ${current.label} · ${count} période${count > 1 ? "s" : ""} disponible${count > 1 ? "s" : ""} · période affichée : ${periodLabel(periodDate)}`}
+    >
+      <span className="sr-only">Référentiel de population</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="cursor-pointer appearance-none rounded-lg bg-artci-green/10 py-1.5 pl-2.5 pr-7 text-[12px] font-bold text-artci-green-700 outline-none transition-colors hover:bg-artci-green/20 focus-visible:ring-2 focus-visible:ring-artci-green/40"
+      >
+        {RGPH_REFERENTIALS.map((r) => {
+          const n = periodsForRgph(periods, r.code).length;
+          return (
+            <option key={r.code} value={r.code} disabled={!n}>
+              {r.label}
+              {n ? "" : " (aucune période)"}
+            </option>
+          );
+        })}
+      </select>
+      <ChevronDown
+        size={12}
+        className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-artci-green-700"
+      />
+    </label>
+  );
+}
 
 function MainSection({
   icon,

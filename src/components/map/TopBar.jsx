@@ -7,6 +7,7 @@ import { Menu, Search, Download, Bell, LogIn, LogOut, ChevronDown, Sun, Moon, Ma
 import { ROLE_META } from "@/lib/nav";
 import { BrandMark } from "./BrandMark";
 import { useMapStore, periodLabel } from "@/stores/map-store";
+import { rgphByCode, periodsForRgph } from "@/lib/rgph";
 import { api } from "@/lib/api-client";
 import { cn } from "@/lib/utils";
 
@@ -14,8 +15,10 @@ import { cn } from "@/lib/utils";
 const LEVEL_ZOOM = { national: 5.6, district: 6.8, region: 7.6, department: 9, subPrefecture: 10.5, locality: 12 };
 
 export function TopBar() {
-  const { toggleSidebar, periodDate, setPeriod, theme, toggleTheme, search, setSearch, flyTo, setActiveDistrict, setStatsPopup, setDataHubOpen, shareOpen, setShareOpen, periods, user, setAuthOpen, logout } = useMapStore();
+  const { toggleSidebar, periodDate, setPeriod, theme, toggleTheme, search, setSearch, flyTo, setActiveDistrict, setStatsPopup, setDataHubOpen, shareOpen, setShareOpen, periods, rgphCode, user, setAuthOpen, logout } = useMapStore();
   const [periodOpen, setPeriodOpen] = useState(false);
+  // Seules les périodes du référentiel choisi dans la barre latérale sont proposées.
+  const availablePeriods = periodsForRgph(periods, rgphCode);
   const [focus, setFocus] = useState(false);
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -89,7 +92,10 @@ export function TopBar() {
               exit={{ opacity: 0, y: -6 }}
               className="glass absolute right-0 top-full z-40 mt-2 w-52 overflow-hidden rounded-2xl p-1.5"
             >
-              {periods.map((p) => (
+              <li className="px-3 pb-1 pt-1.5 text-[10px] font-bold uppercase tracking-wide text-muted">
+                {rgphByCode(rgphCode).label}
+              </li>
+              {availablePeriods.map((p) => (
                 <li key={p.date}>
                   <button
                     onClick={() => { setPeriod(p.date); setPeriodOpen(false); }}

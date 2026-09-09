@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { OPERATORS, TECHNOLOGIES } from "@/config/artci";
+import { DEFAULT_METRIC } from "@/lib/coverage";
+import { RGPH_REFERENTIALS, rgphCodeFor, pickPeriodForRgph } from "@/lib/rgph";
 
 /** Périodes semestrielles par défaut (repli si l'API base n'est pas disponible). */
 export const PERIODS = [
@@ -13,10 +15,8 @@ export const PERIODS = [
   { label: "30 juin 2021", date: "2021-06-30" },
 ];
 
-export const RGPH = [
-  { label: "RGPH 2014", code: "RG-2014" },
-  { label: "RGPH 2021", code: "RG-2021" },
-];
+/** Référentiels de population - définis une seule fois dans `lib/rgph`. */
+export const RGPH = RGPH_REFERENTIALS;
 
 /** Libellé d'une période - résolu contre la liste dynamique (base) puis le repli. */
 export const periodLabel = (date) => {
@@ -85,7 +85,13 @@ export const useMapStore = create((set, get) => ({
       if (pr?.success && pr.data?.length) {
         patch.periods = pr.data.map((p) => ({ date: p.date, label: p.label }));
         const cur = get().periodDate;
-        if (!patch.periods.some((p) => p.date === cur)) patch.periodDate = patch.periods[0].date;
+        if (!patch.periods.some((p) => p.date === cur)) {
+          // On conserve si possible le référentiel choisi, sinon période la plus récente.
+          patch.periodDate =
+            pickPeriodForRgph(patch.periods, get().rgphCode, null) ?? patch.periods[0].date;
+        }
+        // Le référentiel suit toujours la période finalement retenue.
+        patch.rgphCode = rgphCodeFor(patch.periodDate ?? cur);
       }
 
       if (opr?.success && opr.data?.length) {
@@ -180,6 +186,15 @@ export const useMapStore = create((set, get) => ({
   // Choroplèthe de couverture : UN seul niveau administratif actif à la fois, visible à tous les zooms.
   coverageLevel: "district", // district | region | department | subPrefecture
   setCoverageLevel: (key) => set({ coverageLevel: key }),
+  /**
+   * Indicateur lu par la choroplèthe : part des localités couvertes ou part
+   * de la population couverte. Le découpage, les opérateurs et les
+   * technologies restent communs aux deux vues.
+   */
+  coverageMetric: DEFAULT_METRIC, // locality | population
+  // Changer d'indicateur invalide la fiche ouverte : ses chiffres portaient
+  // sur l'autre lecture.
+  setCoverageMetric: (coverageMetric) => set({ coverageMetric, selectedEntity: null }),
   toggleOperator: (op) =>
     set((s) => ({
       operators: s.operators.includes(op) ? s.operators.filter((o) => o !== op) : [...s.operators, op],
@@ -302,8 +317,27 @@ export const useMapStore = create((set, get) => ({
 
   /** Période semestrielle + style de carte */
   periodDate: PERIODS[0].date,
+  /**
+   * Référentiel de population piloté depuis la barre latérale. Il reste
+   * toujours cohérent avec la période affichée : changer l'un ajuste l'autre
+   * via la règle centralisée de `lib/rgph`.
+   */
+  rgphCode: rgphCodeFor(PERIODS[0].date),
   // Changer de période efface l'entité sélectionnée (ses stats étaient figées sur l'ancienne période).
-  setPeriod: (date) => set({ periodDate: date, selectedEntity: null }),
+  setPeriod: (date) => set({ periodDate: date, rgphCode: rgphCodeFor(date), selectedEntity: null }),
+  /**
+   * Changement de référentiel : la période courante est conservée si elle
+   * appartient au recensement choisi, sinon on bascule sur la plus récente qui
+   * en relève. Sans aucune période publiée pour ce référentiel, la sélection
+   * est ignorée (l'option est désactivée dans l'interface).
+   */
+  setRgph: (code) =>
+    set((s) => {
+      const date = pickPeriodForRgph(s.periods, code, s.periodDate);
+      if (!date) return {};
+      if (date === s.periodDate) return { rgphCode: code };
+      return { rgphCode: code, periodDate: date, selectedEntity: null };
+    }),
   mapStyle: "streets",
   setMapStyle: (mapStyle) => set({ mapStyle }),
 

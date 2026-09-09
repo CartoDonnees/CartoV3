@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import mapboxgl from "mapbox-gl";
 import { X, Check, Plus, GripVertical, GitCompareArrows, CalendarRange, Shapes } from "lucide-react";
 import { useMapStore } from "@/stores/map-store";
+import { periodsForRgph } from "@/lib/rgph";
 import { ADMIN_LOADERS } from "@/lib/geodata";
 import { ADMIN_LIMITS } from "@/config/artci";
 import { computeRate, COVERAGE_COLOR } from "@/lib/coverage";
@@ -51,6 +52,9 @@ export function CompareMode() {
   const periodDate = useMapStore((s) => s.periodDate);
   const setPeriod = useMapStore((s) => s.setPeriod);
   const periods = useMapStore((s) => s.periods);
+  const rgphCode = useMapStore((s) => s.rgphCode);
+  // Le comparateur reste dans le référentiel de population sélectionné.
+  const availablePeriods = periodsForRgph(periods, rgphCode);
   const operatorList = useMapStore((s) => s.operatorList);
   const technologyList = useMapStore((s) => s.technologyList);
   const mapStyle = useMapStore((s) => s.mapStyle);
@@ -271,7 +275,7 @@ export function CompareMode() {
               onChange={(e) => setPeriod(e.target.value)}
               className="max-w-[150px] bg-transparent font-bold outline-none"
             >
-              {periods.map((p) => (
+              {availablePeriods.map((p) => (
                 <option key={p.date} value={p.date}>{p.label}</option>
               ))}
             </select>

@@ -9,6 +9,7 @@ import {
   OPERATORS, TECHNOLOGIES, ADMIN_LIMITS,
   FIBER_LAYERS, ADMIN_LINE_STYLE, ROAD_LAYERS, COVERAGE_SCALE, POINT_COLORS,
 } from "@/config/artci";
+import { metricInfo } from "@/lib/coverage";
 
 const OP = Object.fromEntries(OPERATORS.map((o) => [o.code, o]));
 const TECH = Object.fromEntries(TECHNOLOGIES.map((t) => [t.code, t]));
@@ -32,6 +33,7 @@ export function buildLegend(state = {}) {
     qosOperators = [],
     showWhiteZones = false,
     coverageLevel = null,
+    coverageMetric = "locality",
     adminLimits = {},
   } = state;
 
@@ -76,8 +78,11 @@ export function buildLegend(state = {}) {
 
   /* ---------------------------- Choroplèthe ----------------------------- */
   if (coverageLevel) {
+    // L'intitulé nomme l'indicateur affiché : la couleur ne veut pas dire la
+    // même chose selon qu'on lise les localités ou la population.
+    const level = (LEVEL_LABEL[coverageLevel] ?? coverageLevel).toLowerCase().replace(/s$/, "");
     push(
-      `Taux de couverture par ${(LEVEL_LABEL[coverageLevel] ?? coverageLevel).toLowerCase().replace(/s$/, "")}`,
+      `${metricInfo(coverageMetric).tooltip} par ${level}`,
       COVERAGE_SCALE.map((s) => ({ label: s.label, color: s.color, shape: SWATCH })),
     );
   }
