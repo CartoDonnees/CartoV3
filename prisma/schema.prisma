@@ -34,6 +34,19 @@ enum PeriodType {
   QOS // qualité de service (campagnes)
 }
 
+/// Résultat d'une action tracée dans le journal d'activité.
+enum ActivityStatus {
+  SUCCESS // action menée à bien
+  FAILURE // action refusée ou en erreur
+}
+
+/// Nature du réseau exploité par un opérateur.
+enum NetworkType {
+  FIXED // réseau fixe seul
+  MOBILE // réseau mobile seul
+  HYBRID // fixe et mobile
+}
+
 enum ReportStatus {
   PENDING
   IN_REVIEW
@@ -101,6 +114,7 @@ model User {
   downloads      Download[]
   notifications  Notification[]
   passwordResets PasswordReset[]
+  activities     ActivityLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -108,6 +122,47 @@ model User {
   @@index([role])
   @@index([status])
   @@index([operatorId])
+}
+
+/// Journal d'activité de la plateforme - données de traçabilité, en lecture seule.
+///
+/// Chaque entrée conserve un INSTANTANÉ de son auteur (nom, e-mail, rôle) : le
+/// journal reste exact si le compte est ensuite renommé, désactivé ou supprimé.
+/// Modifications et suppressions sont bloquées au niveau de la base par un
+/// déclencheur (cf. migration `activity_log`) ; seule la rupture du lien vers un
+/// compte supprimé (`onDelete: SetNull`) est tolérée.
+model ActivityLog {
+  id   Int    @id @default(autoincrement())
+  code String @unique @default(cuid())
+
+  userId     Int?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  actorName  String
+  actorEmail String?
+  actorRole  Role?
+
+  /// Vocabulaire ouvert (CREATE, UPDATE, LOGIN…) décrit dans `lib/activity-format`.
+  action        String
+  /// Type de ressource (user, operator, locality…) - ouvert lui aussi.
+  resourceType  String
+  resourceId    String?
+  resourceLabel String?
+
+  description String         @db.Text
+  oldValue    Json?
+  newValue    Json?
+  status      ActivityStatus @default(SUCCESS)
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([action])
+  @@index([resourceType])
+  @@index([status])
 }
 
 model PasswordReset {
@@ -225,14 +280,17 @@ model Locality {
 // -------------------- Opérateurs & technologies -------------
 
 model Operator {
-  id          Int      @id @default(autoincrement())
-  code        String   @unique @default(cuid())
-  name        String   @unique
+  id          Int         @id @default(autoincrement())
+  code        String      @unique @default(cuid())
+  name        String      @unique
   color       String
+  /// Logo de l'opérateur : chemin racine (/images/…) ou nom de fichier téléversé.
   imagePath   String?
+  /// Nature du réseau exploité - fixe, mobile ou les deux.
+  network     NetworkType @default(MOBILE)
   fiberKm     Int?
-  status      Status   @default(ACTIVE)
-  description String?  @db.Text
+  status      Status      @default(ACTIVE)
+  description String?     @db.Text
 
   coverageData         CoverageData[]
   temporalCoverageData TemporalCoverageData[]

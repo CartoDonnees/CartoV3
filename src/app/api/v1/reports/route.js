@@ -1,5 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { ok, fail, withErrorHandling } from "@/lib/api/response";
+import { getSessionUser } from "@/lib/auth-server";
+import { recordActivity } from "@/lib/activity";
+import { referenceOf } from "@/lib/activity-format";
 
 const ENUM_TO_LABEL = {
   NO_NETWORK: "Pas de réseau",
@@ -86,6 +89,17 @@ export const POST = withErrorHandling(async (request) => {
         problems: { connect: problems.map((p) => ({ id: p.id })) },
       },
     });
+    // Signalement citoyen : téléphone, e-mail et commentaire - données
+    // personnelles - ne sont pas recopiés au journal.
+    await recordActivity({
+      actor: await getSessionUser().catch(() => null),
+      action: "CREATE",
+      resourceType: "appReport",
+      resourceId: report.code,
+      resourceLabel: referenceOf(report.code),
+      newValue: { "Problèmes signalés": problems.map((p) => p.title).join(", ") || "(aucun)" },
+      request,
+    });
     return ok({ code: report.code, kind: "app" }, { status: 201 });
   }
 
@@ -119,6 +133,21 @@ export const POST = withErrorHandling(async (request) => {
       operators: { connect: operators.map((o) => ({ id: o.id })) },
       problems: { connect: problems.map((p) => ({ id: p.id })) },
     },
+  });
+
+  await recordActivity({
+    actor: await getSessionUser().catch(() => null),
+    action: "CREATE",
+    resourceType: "report",
+    resourceId: report.code,
+    resourceLabel: referenceOf(report.code),
+    newValue: {
+      category: report.category,
+      localityName: report.localityName,
+      "Opérateurs concernés": operators.map((o) => o.name).join(", "),
+      "Problèmes signalés": problems.map((p) => p.title).join(", ") || "(aucun)",
+    },
+    request,
   });
 
   return ok(

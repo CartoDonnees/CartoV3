@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Search, Pencil, Trash2, Inbox } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Plus, Search, Pencil, Trash2, Inbox, Upload, Image as ImageIcon } from "lucide-react";
 import { api } from "@/lib/api-client";
+import { mediaUrl } from "@/lib/media";
 import Modal from "./Modal";
 import { PageHead, Spinner, EmptyState } from "./ui";
 import { SortHeader, useTableSort } from "@/components/ui/kit";
@@ -310,6 +311,8 @@ function Field({ field, value, options, onChange, mode }) {
           <input type="color" value={v || "#159a4e"} onChange={(e) => onChange(e.target.value)} />
           <input className={s.input} value={v} placeholder="#159a4e" onChange={(e) => onChange(e.target.value)} />
         </div>
+      ) : type === "image" ? (
+        <ImageField value={v} onChange={onChange} placeholder={placeholder} />
       ) : (
         <input
           className={s.input}
@@ -322,6 +325,86 @@ function Field({ field, value, options, onChange, mode }) {
         />
       )}
       {help && <span className={s.statHint}>{help}</span>}
+    </div>
+  );
+}
+
+/**
+ * Champ image : téléversement d'un fichier, ou saisie directe d'un chemin.
+ *
+ * Le fichier part vers `/api/v1/admin/uploads`, qui renvoie le chemin à
+ * enregistrer. Le formulaire ne manipule donc jamais que du texte : la valeur
+ * du champ reste un chemin, comme pour n'importe quel autre champ.
+ */
+function ImageField({ value, onChange, placeholder }) {
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const inputRef = useRef(null);
+
+  async function upload(file) {
+    if (!file) return;
+    setErr("");
+    setBusy(true);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      const res = await fetch("/api/v1/admin/uploads", { method: "POST", body });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || json.success === false) {
+        throw new Error(json?.error?.message || `Erreur ${res.status}`);
+      }
+      onChange(json.data.path);
+    } catch (e) {
+      setErr(e.message);
+    } finally {
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = "";
+    }
+  }
+
+  const url = mediaUrl(value);
+
+  return (
+    <div className={s.imageField}>
+      <div className={s.imagePreview}>
+        {url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt="" />
+        ) : (
+          <ImageIcon size={18} color="var(--muted)" />
+        )}
+      </div>
+      <div className={s.imageActions}>
+        <div className={s.imageButtons}>
+          <button
+            type="button"
+            className={`${s.btn} ${s.btnSm}`}
+            onClick={() => inputRef.current?.click()}
+            disabled={busy}
+          >
+            <Upload size={14} /> {busy ? "Envoi…" : value ? "Remplacer" : "Téléverser"}
+          </button>
+          {value && (
+            <button type="button" className={`${s.btn} ${s.btnSm} ${s.btnGhost}`} onClick={() => onChange("")}>
+              <Trash2 size={14} color="var(--uncovered)" /> Retirer
+            </button>
+          )}
+        </div>
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/png,image/jpeg,image/webp,image/svg+xml,image/gif,image/avif"
+          hidden
+          onChange={(e) => upload(e.target.files?.[0])}
+        />
+        <input
+          className={s.input}
+          value={value ?? ""}
+          placeholder={placeholder || "/images/logo/… ou URL"}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        {err && <span className={s.formError}>{err}</span>}
+      </div>
     </div>
   );
 }

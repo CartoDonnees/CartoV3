@@ -218,6 +218,6 @@ function IconBtn({ icon, label, onClick, active }) {
       title={label}
     >
       {icon}
-    </button>
+    </button> 
   );
 }

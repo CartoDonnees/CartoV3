@@ -7,6 +7,8 @@ const STATUS = ["ACTIVE", "INACTIVE", "PENDING", "SUSPENDED"];
 const PROBLEM_TYPES = ["APPLICATION", "NETWORK"];
 const PROBLEM_LEVELS = ["HIGH", "MEDIUM", "LOW", "VOICE", "SMS", "DATA"];
 const PERIOD_TYPES = ["COVERAGE", "QOS"];
+/** Nature du réseau exploité par un opérateur (cf. enum Prisma `NetworkType`). */
+const NETWORK_TYPES = ["FIXED", "MOBILE", "HYBRID"];
 
 /** Résout l'id d'un opérateur depuis son code public (ou null). */
 async function operatorIdFromCode(code, { required = false } = {}) {
@@ -91,6 +93,7 @@ export const operators = createCrud({
     name: o.name,
     color: o.color,
     imagePath: o.imagePath,
+    network: o.network,
     fiberKm: o.fiberKm,
     status: o.status,
     description: o.description,
@@ -99,6 +102,9 @@ export const operators = createCrud({
   parseCreate: (b) => ({
     name: V.str(b.name, "Nom", { required: true, max: 80 }).toUpperCase(),
     color: V.str(b.color, "Couleur", { required: true, max: 20 }),
+    // Chemin du logo : produit par `/api/v1/admin/uploads` ou saisi à la main.
+    imagePath: V.str(b.imagePath, "Logo", { max: 300 }) || null,
+    network: V.enum(b.network, "Type de réseau", NETWORK_TYPES, { def: "MOBILE" }),
     fiberKm: V.int(b.fiberKm, "Fibre (km)"),
     status: V.enum(b.status, "Statut", STATUS, { def: "ACTIVE" }),
     description: V.str(b.description, "Description"),
@@ -106,6 +112,8 @@ export const operators = createCrud({
   parseUpdate: (b) => ({
     name: b.name !== undefined ? V.str(b.name, "Nom", { required: true, max: 80 }).toUpperCase() : undefined,
     color: b.color !== undefined ? V.str(b.color, "Couleur", { required: true, max: 20 }) : undefined,
+    imagePath: b.imagePath !== undefined ? V.str(b.imagePath, "Logo", { max: 300 }) || null : undefined,
+    network: b.network !== undefined ? V.enum(b.network, "Type de réseau", NETWORK_TYPES) : undefined,
     fiberKm: b.fiberKm !== undefined ? V.int(b.fiberKm, "Fibre (km)") : undefined,
     status: b.status !== undefined ? V.enum(b.status, "Statut", STATUS) : undefined,
     description: b.description !== undefined ? V.str(b.description, "Description") : undefined,

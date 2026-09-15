@@ -1,8 +1,22 @@
 import { prisma } from "@/lib/prisma";
 import { ok, fail, withErrorHandling } from "@/lib/api/response";
 import { guard } from "@/lib/auth-server";
+import { recordActivity } from "@/lib/activity";
+import { diffValues } from "@/lib/activity-format";
 
 const DECLARANTS = ["ADMIN", "OPERATOR"];
+
+/** Libellés lisibles des trois indicateurs déclarés par technologie. */
+const COVERAGE_FIELDS = { coverage: "couverture", present: "station présente", forecast: "couverture prévue" };
+
+/** Déclaration mise à plat : « 2G — couverture » → true, pour la comparaison avant / après. */
+function flattenCoverage(cells) {
+  const out = {};
+  for (const c of cells) {
+    for (const [field, label] of Object.entries(COVERAGE_FIELDS)) out[`${c.tech} — ${label}`] = !!c[field];
+  }
+  return out;
+}
 const READERS = ["ADMIN", "SUPERVISOR", "CONTROLLER", "OPERATOR"];
 
 /** Opérateurs qu'un utilisateur a le droit de déclarer. */
@@ -109,6 +123,13 @@ export const PUT = withErrorHandling(async (request) => {
     return fail("FORBIDDEN", "Vous ne pouvez déclarer que pour votre propre réseau.", 403);
   }
 
+  // État déclaré AVANT l'écriture, pour que le journal montre ce qui a changé.
+  const before = await prisma.coverageData.findMany({
+    where: { operatorId: operator.id, summary: { localityId: locality.id, periodId: period.id } },
+    include: { technology: { select: { name: true } } },
+  });
+  const beforeCells = before.map((c) => ({ tech: c.technology.name, coverage: c.coverage, present: c.present, forecast: c.forecast }));
+
   const summary = await prisma.summary.upsert({
     where: { localityId_periodId: { localityId: locality.id, periodId: period.id } },
     update: { dateUpdate: new Date() },
@@ -139,6 +160,24 @@ export const PUT = withErrorHandling(async (request) => {
       },
     });
   }
+
+  // Après : les technologies non transmises gardent leur valeur antérieure.
+  const afterByTech = new Map(beforeCells.map((c) => [c.tech, c]));
+  for (const tech of technologies) {
+    const v = values[tech.name];
+    if (v) afterByTech.set(tech.name, { tech: tech.name, coverage: !!v.coverage, present: !!v.present, forecast: !!v.forecast });
+  }
+  const { oldValue, newValue } = diffValues(flattenCoverage(beforeCells), flattenCoverage([...afterByTech.values()]));
+  await recordActivity({
+    actor: user,
+    action: before.length ? "UPDATE" : "CREATE",
+    resourceType: "coverage",
+    resourceId: `${locality.code}/${period.code}/${operator.name}`,
+    resourceLabel: `de ${operator.name} pour la localité ${locality.name} (${period.title})`,
+    oldValue,
+    newValue,
+    request,
+  });
 
   return ok({ locality: locality.code, period: period.code, operator: operator.name });
 });

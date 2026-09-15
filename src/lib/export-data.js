@@ -5,6 +5,8 @@
  * LATITUDE, LONGITUDE puis « COUVERTURE {technologie} {opérateur} ».
  */
 
+import { reportExport } from "@/lib/activity-client";
+
 const OPS = ["ORANGE", "MTN", "MOOV"];
 const TECHS = ["2G", "3G", "4G"];
 
@@ -179,6 +181,24 @@ export async function exportGeoJson(url, base) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Téléchargement impossible.");
   saveBlob(await res.blob(), stamp(base, "geojson"));
+  reportExport("GEOJSON", base);
+}
+
+/**
+ * Génère un CSV (séparateur `;`, BOM UTF-8) : Excel francophone l'ouvre
+ * directement, avec les accents intacts.
+ */
+export function exportCsv(rows, columns, base) {
+  if (!rows.length) throw new Error("Aucune donnée à exporter.");
+  const cell = (v) => {
+    const s = v == null ? "" : String(v);
+    return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const body = [columns, ...rows.map((r) => columns.map((c) => r[c]))]
+    .map((line) => line.map(cell).join(";"))
+    .join("\r\n");
+  saveBlob(new Blob(["﻿" + body], { type: "text/csv;charset=utf-8" }), stamp(base, "csv"));
+  reportExport("CSV", base);
 }
 
 /** Génère un classeur Excel (.xlsx) à partir des lignes. */
@@ -209,6 +229,7 @@ export async function exportExcel(rows, columns, base, sheetName = "Données") {
     new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
     stamp(base, "xlsx"),
   );
+  reportExport("XLSX", sheetName && sheetName !== "Données" ? sheetName : base);
 }
 
 /** Génère un PDF tabulaire (paysage) à partir des lignes. */
@@ -249,4 +270,5 @@ export async function exportPdf(rows, columns, base, title, subtitle) {
   });
 
   doc.save(stamp(base, "pdf"));
+  reportExport("PDF", title || base);
 }

@@ -41,7 +41,12 @@ const DATED_KINDS = {
   subPrefecture: (d) => `subPrefecture_${d}.geojson`,
   locality: (d) => `locality_${d}.geojson`,
   whiteLocality: (d) => `whiteLocality_${d}.geojson`,
+  // Localités présentant au moins une lacune d'opérateur, avec masque de
+  // couverture (cf. scripts/build-white-index.mjs).
+  whiteLocalityOps: (d) => `whiteLocalityOps_${d}.geojson`,
   stats: (d) => `statsnationales_${d}.json`,
+  // Index compact des localités équipées en stations (cf. scripts/build-station-index.mjs).
+  stationIndex: (d) => `stations_localites_${d}.json`,
 };
 const FIBER_OPS = new Set(["orange", "mtn", "awale", "ansut"]);
 
@@ -85,6 +90,9 @@ export async function GET(request) {
     filename = `locality_${campaign}_.geojson`;
   } else if (kind === "railways") {
     filename = "railways.geojson";
+  } else if (kind === "stations") {
+    // Sites 2G/3G/4G extraits des jeux de tuiles ARTCI (non datés).
+    filename = "stations.geojson";
   } else if (kind === "state") {
     // Limite (bordure) de l'État de Côte d'Ivoire - non datée, dans dataFiles/init.
     baseDir = INIT_DIR;
@@ -115,7 +123,8 @@ export async function GET(request) {
   const webStream = Readable.toWeb(nodeStream);
   return new Response(webStream, {
     headers: {
-      "Content-Type": kind === "stats" ? "application/json" : "application/geo+json",
+      "Content-Type":
+        kind === "stats" || kind === "stationIndex" ? "application/json" : "application/geo+json",
       "Cache-Control": "public, max-age=86400, immutable",
     },
   });

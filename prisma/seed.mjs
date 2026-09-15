@@ -5,10 +5,13 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 const hash = (pw) => bcrypt.hash(pw, 10);
 
+// `imagePath` pointe vers les logos servis depuis `public/` : ils font partie
+// du dépôt, contrairement aux fichiers téléversés qui, eux, dépendent de
+// l'installation.
 const OPERATORS = [
-  { name: "ORANGE", color: "#f47b20", fiberKm: 12296, imagePath: "1730988953719_blob.png", description: "Opérateur historique (ex-SIM / Ivoiris)." },
-  { name: "MTN", color: "#ffcc00", fiberKm: 5800, imagePath: "1730964287117_blob.png", description: "Opérateur lancé en 2005 (rachat de Telecel/Loteny)." },
-  { name: "MOOV", color: "#0aa0dd", fiberKm: 4612, imagePath: "1730988968100_blob.png", description: "Filiale Maroc Télécom, lancée en 2006 (ex-Etisalat)." },
+  { name: "ORANGE", color: "#f47b20", fiberKm: 12296, network: "MOBILE", imagePath: "/images/logo/operateurs/orange.png", description: "Opérateur historique (ex-SIM / Ivoiris)." },
+  { name: "MTN", color: "#ffcc00", fiberKm: 5800, network: "MOBILE", imagePath: "/images/logo/operateurs/mtn.png", description: "Opérateur lancé en 2005 (rachat de Telecel/Loteny)." },
+  { name: "MOOV", color: "#0aa0dd", fiberKm: 4612, network: "MOBILE", imagePath: "/images/logo/operateurs/moov.png", description: "Filiale Maroc Télécom, lancée en 2006 (ex-Etisalat)." },
 ];
 
 const TECHNOLOGIES = [
@@ -55,7 +58,7 @@ async function main() {
   for (const o of OPERATORS) {
     await prisma.operator.upsert({
       where: { name: o.name },
-      update: { color: o.color, fiberKm: o.fiberKm, imagePath: o.imagePath, description: o.description, status: "ACTIVE" },
+      update: { color: o.color, fiberKm: o.fiberKm, network: o.network, imagePath: o.imagePath, description: o.description, status: "ACTIVE" },
       create: { ...o, status: "ACTIVE" },
     });
   }

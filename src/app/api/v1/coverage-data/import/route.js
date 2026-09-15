@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ok, fail, withErrorHandling } from "@/lib/api/response";
 import { guard } from "@/lib/auth-server";
+import { recordActivity } from "@/lib/activity";
 
 const truthy = (v) => {
   const s = String(v ?? "").trim().toLowerCase();
@@ -92,6 +93,22 @@ export const POST = withErrorHandling(async (request) => {
       }
     }
   }
+
+  await recordActivity({
+    actor: user,
+    action: "IMPORT",
+    resourceType: "coverageImport",
+    resourceId: period.code,
+    resourceLabel: `de la période ${period.title}`,
+    newValue: {
+      "Opérateurs concernés": operators.map((o) => o.name).join(", "),
+      "Lignes lues": rows.length,
+      "Localités mises à jour": summaries,
+      "Valeurs enregistrées": cells,
+      "Codes de localité inconnus": unknown.length,
+    },
+    request,
+  });
 
   return ok({
     period: period.title,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Users, Radio, SignalHigh, MessageSquareWarning } from "lucide-react";
 import { api } from "@/lib/api-client";
 import { PageHead, StatCard, Card, Spinner, RoleBadge, StatusBadge } from "@/components/dashboard/ui";
@@ -31,9 +32,16 @@ export default function AdminDashboard() {
 
       <RoleCoverage />
 
-      <h2 className={s.cardTitle} style={{ fontSize: "1.15rem", margin: "1.6rem 0 0.8rem" }}>
-        Activité de la plateforme
-      </h2>
+      {/* Compteurs de synthèse. Le fil détaillé des actions a sa propre page,
+          « Activité de la plateforme » : ce bloc n'en reprend pas le nom. */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2" style={{ margin: "1.6rem 0 0.8rem" }}>
+        <h2 className={s.cardTitle} style={{ fontSize: "1.15rem", margin: 0 }}>
+          Aperçu de la plateforme
+        </h2>
+        <Link href="/admin/activite" className="text-[13px] font-bold text-artci-green-700 hover:underline">
+          Voir l&apos;activité détaillée →
+        </Link>
+      </div>
 
       {sum === null ? (
         <Spinner />

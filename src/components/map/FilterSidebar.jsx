@@ -39,6 +39,7 @@ import {
 import { getStats } from "@/lib/geodata";
 import { COVERAGE_METRICS, metricInfo } from "@/lib/coverage";
 import { iconDataUri } from "@/lib/mapIcons";
+import { OperatorLogo } from "@/components/ui/OperatorLogo";
 import { formatNumber, formatPercent, cn } from "@/lib/utils";
 
 export function FilterSidebar() {
@@ -175,8 +176,9 @@ export function FilterSidebar() {
                         type="button"
                         onClick={() => setCoverageMetric(m.key)}
                         aria-pressed={coverageMetric === m.key}
+                        style={{borderRadius: "5px"}}
                         className={cn(
-                          "flex-1 rounded-lg py-1.5 text-[11.5px] font-bold transition-colors",
+                          "flex-1 rounded-xl2 py-1.5 text-[11.5px] font-bold transition-colors",
                           coverageMetric === m.key
                             ? "brand-gradient text-white shadow-sm"
                             : "text-muted hover:bg-surface-2",
@@ -247,6 +249,7 @@ export function FilterSidebar() {
                         key={op.code}
                         name={op.name}
                         color={op.color}
+                        operator={op}
                         km={op.fiberKm}
                         checked={controls[`showFiber${op.code}`]}
                         onChange={() => toggleControl(`showFiber${op.code}`)}
@@ -354,12 +357,12 @@ export function FilterSidebar() {
                         key={op.code}
                         className="rounded-xl border border-border p-2 text-center"
                       >
-                        <span
-                          className="grid h-8 w-8 place-items-center rounded-full text-[10px] font-bold text-white mx-auto"
-                          style={{ backgroundColor: op.color }}
-                        >
-                          {op.code[0]}
-                        </span>
+                        <OperatorLogo
+                          operator={op}
+                          size={32}
+                          dim={!qosOperators.includes(op.code)}
+                          className="mx-auto rounded-full"
+                        />
                         <IosSwitch checked={false} disabled />
                       </div>
                     ))}
@@ -420,12 +423,12 @@ export function FilterSidebar() {
                         key={op.code}
                         className="rounded-xl border border-border p-2 text-center"
                       >
-                        <span
-                          className="grid h-8 w-8 place-items-center rounded-full text-[10px] font-bold text-white mx-auto"
-                          style={{ backgroundColor: op.color }}
-                        >
-                          {op.code[0]}
-                        </span>
+                        <OperatorLogo
+                          operator={op}
+                          size={32}
+                          dim={!qosOperators.includes(op.code)}
+                          className="mx-auto rounded-full"
+                        />
                         <button
                           onClick={() => toggleQosOperator(op.code)}
                           className="mt-1 flex w-full justify-center"
@@ -767,7 +770,7 @@ function OperatorCoverage() {
               className="flex min-w-0 items-center gap-1.5"
             >
               <TinyCheck checked={active} color={op.color} />
-              <img src={iconDataUri(`ic-op-${op.code}`)} alt="" className="h-5 w-5 shrink-0" />
+              <OperatorLogo operator={op} size={20} dim={!active} />
               <span className="truncate text-[12.5px] font-bold">{op.name.split(" ")[0]}</span>
             </button>
 
@@ -935,7 +938,7 @@ function IosSwitch({ checked, color, disabled }) {
   );
 }
 
-function FiberCard({ name, color, km, checked, onChange }) {
+function FiberCard({ name, color, km, checked, onChange, operator }) {
   return (
     <button
       onClick={onChange}
@@ -946,6 +949,9 @@ function FiberCard({ name, color, km, checked, onChange }) {
           : "border-border opacity-70",
       )}
     >
+      {/* Le logo identifie l'opérateur ; la barre colorée reste le repère de
+          la couche tracée sur la carte. */}
+      {operator && <OperatorLogo operator={operator} size={22} dim={!checked} className="mx-auto mb-1" />}
       <span
         className="mx-auto block h-1.5 w-8 rounded-full"
         style={{ backgroundColor: color }}

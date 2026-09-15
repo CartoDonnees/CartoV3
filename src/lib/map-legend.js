@@ -152,6 +152,14 @@ export function buildLegend(state = {}) {
 /** Nombre de colonnes de légende pour une largeur de page donnée (en mm). */
 export const legendColumnCount = (widthMm) => (widthMm > 240 ? 4 : widthMm > 170 ? 3 : 2);
 
+/**
+ * Colonnes réellement utilisées : jamais plus que de groupes à placer.
+ * Une légende à deux rubriques occupe deux colonnes larges plutôt que quatre
+ * étroites dont la moitié resterait vide.
+ */
+export const effectiveColumns = (groups, widthMm) =>
+  Math.max(1, Math.min(legendColumnCount(widthMm), groups.length));
+
 /** Nombre total d'entrées, tous groupes confondus. */
 export const legendItemCount = (groups) => groups.reduce((n, g) => n + g.items.length, 0);
 
@@ -161,8 +169,8 @@ export const legendItemCount = (groups) => groups.reduce((n, g) => n + g.items.l
  * ses entrées. Sert à réserver la place AVANT de rendre la carte.
  */
 export function legendHeightMm(groups, widthMm, { lineMm = 4.2, titleMm = 5, padMm = 4 } = {}) {
-  const columns = legendColumnCount(widthMm);
   if (!groups.length) return 0;
+  const columns = effectiveColumns(groups, widthMm);
   // Répartition gloutonne : on équilibre le nombre de lignes par colonne.
   const cost = (g) => titleMm + g.items.length * lineMm;
   const heights = new Array(columns).fill(0);

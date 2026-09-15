@@ -1,4 +1,5 @@
-import { legendColumnCount, legendColumns, legendHeightMm } from "@/lib/map-legend";
+import { effectiveColumns, legendColumns, legendHeightMm } from "@/lib/map-legend";
+import { reportExport } from "@/lib/activity-client";
 
 /**
  * Export cartographique - reprise du contrôle d'export de la version 2
@@ -223,10 +224,46 @@ const hex = (c) => {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
 
+/**
+ * Pictogrammes de légende (`item.icon`, data-URI d'image).
+ *
+ * jsPDF n'intègre pas le SVG : chaque icône est rastérisée une fois en PNG. Le
+ * canevas des formats image réutilise ce même rendu. Une icône illisible est
+ * simplement omise : l'entrée retombe sur sa forme géométrique habituelle.
+ */
+async function rasterizeLegendIcons(groups) {
+  const out = new Map();
+  const uris = [...new Set(groups.flatMap((g) => g.items.map((i) => i.icon).filter(Boolean)))];
+  await Promise.all(
+    uris.map(async (uri) => {
+      try {
+        const img = await new Promise((resolve, reject) => {
+          const im = new Image();
+          im.onload = () => resolve(im);
+          im.onerror = reject;
+          im.src = uri;
+        });
+        const h = 96;
+        const nw = img.naturalWidth || img.width || h;
+        const nh = img.naturalHeight || img.height || h;
+        const w = Math.max(1, Math.round((nw * h) / nh));
+        const c = document.createElement("canvas");
+        c.width = w;
+        c.height = h;
+        c.getContext("2d").drawImage(img, 0, 0, w, h);
+        out.set(uri, { png: c.toDataURL("image/png"), img: c, ratio: w / h });
+      } catch {
+        /* repli sur la forme géométrique */
+      }
+    }),
+  );
+  return out;
+}
+
 /** Dessine la légende des couches affichées, en colonnes, sous la carte. */
-function drawLegend(pdf, groups, { x, y, width }) {
+function drawLegend(pdf, groups, { x, y, width, icons = new Map() }) {
   if (!groups.length) return;
-  const columns = legendColumnCount(width);
+  const columns = effectiveColumns(groups, width);
   const cols = legendColumns(groups, columns);
   const colW = width / columns;
 
@@ -249,7 +286,12 @@ function drawLegend(pdf, groups, { x, y, width }) {
       for (const item of g.items) {
         const [r, gr, b] = hex(item.color);
         pdf.setFillColor(r, gr, b);
-        if (item.shape === "line") {
+        const icon = item.icon && icons.get(item.icon);
+        if (icon) {
+          const h = 3.8;
+          const w = h * icon.ratio;
+          pdf.addImage(icon.png, "PNG", cx + 2.2 - w / 2, cy - h + 0.6, w, h);
+        } else if (item.shape === "line") {
           pdf.rect(cx, cy - 1.1, 4.4, 1.1, "F");
         } else if (item.shape === "swatch") {
           pdf.rect(cx, cy - 2.2, 4.4, 2.6, "F");
@@ -265,6 +307,99 @@ function drawLegend(pdf, groups, { x, y, width }) {
 }
 
 /**
+ * Compose une image matricielle « prête à diffuser » : bandeau de titre,
+ * carte, puis légende - la même mise en page que le PDF, aux mêmes
+ * proportions (tout est calculé en millimètres puis converti à la résolution
+ * demandée). Sans cela, un PNG sortirait sans sa légende.
+ */
+function composeRaster(canvas, { legend, title, subtitle, dpi, icons = new Map() }) {
+  const pxPerMm = dpi / 25.4;
+  const mm = (v) => Math.round(v * pxPerMm);
+  const widthMm = canvas.width / pxPerMm;
+  const contentMm = widthMm - MARGIN_MM * 2;
+  const legendMm = legend.length ? legendHeightMm(legend, contentMm) : 0;
+
+  const out = document.createElement("canvas");
+  out.width = canvas.width;
+  out.height = mm(HEADER_MM) + canvas.height + mm(legendMm);
+  const ctx = out.getContext("2d");
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, out.width, out.height);
+
+  // Bandeau de titre, identique à celui du PDF.
+  ctx.fillStyle = "#159a4e";
+  ctx.fillRect(0, 0, out.width, mm(HEADER_MM));
+  ctx.fillStyle = "#ffffff";
+  ctx.textBaseline = "alphabetic";
+  ctx.font = `bold ${mm(3.9)}px Helvetica, Arial, sans-serif`;
+  ctx.fillText(title, mm(MARGIN_MM), mm(7));
+  ctx.font = `${mm(2.6)}px Helvetica, Arial, sans-serif`;
+  ctx.fillText(subtitle, mm(MARGIN_MM), mm(12));
+
+  ctx.drawImage(canvas, 0, mm(HEADER_MM));
+
+  if (legendMm) {
+    drawLegendCanvas(ctx, legend, {
+      x: mm(MARGIN_MM),
+      y: mm(HEADER_MM) + canvas.height + mm(4),
+      width: mm(contentMm),
+      widthMm: contentMm,
+      pxPerMm,
+      icons,
+    });
+  }
+  return out;
+}
+
+/** Légende dessinée sur un canevas - transposition de `drawLegend`. */
+function drawLegendCanvas(ctx, groups, { x, y, width, widthMm, pxPerMm, icons = new Map() }) {
+  const mm = (v) => v * pxPerMm;
+  const columns = effectiveColumns(groups, widthMm);
+  const cols = legendColumns(groups, columns);
+  const colW = width / columns;
+
+  ctx.strokeStyle = "#e2e8e5";
+  ctx.lineWidth = Math.max(1, mm(0.3));
+  ctx.beginPath();
+  ctx.moveTo(x, y - mm(2));
+  ctx.lineTo(x + width, y - mm(2));
+  ctx.stroke();
+
+  cols.forEach((groupsOfCol, ci) => {
+    let cy = y + mm(3);
+    const cx = x + ci * colW;
+    for (const g of groupsOfCol) {
+      ctx.fillStyle = "#647570";
+      ctx.font = `bold ${mm(2.3)}px Helvetica, Arial, sans-serif`;
+      ctx.fillText(g.title.toUpperCase(), cx, cy, colW - mm(2));
+      cy += mm(3.4);
+
+      for (const item of g.items) {
+        ctx.fillStyle = item.color || "#64748b";
+        const icon = item.icon && icons.get(item.icon);
+        if (icon) {
+          const h = mm(3.8);
+          const w = h * icon.ratio;
+          ctx.drawImage(icon.img, cx + mm(2.2) - w / 2, cy - h + mm(0.6), w, h);
+        } else if (item.shape === "line") ctx.fillRect(cx, cy - mm(1.1), mm(4.4), mm(1.1));
+        else if (item.shape === "swatch") ctx.fillRect(cx, cy - mm(2.2), mm(4.4), mm(2.6));
+        else {
+          ctx.beginPath();
+          ctx.arc(cx + mm(1.7), cy - mm(0.9), mm(1.5), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.fillStyle = "#0e1512";
+        ctx.font = `${mm(2.4)}px Helvetica, Arial, sans-serif`;
+        ctx.fillText(String(item.label), cx + mm(6.4), cy, colW - mm(8));
+        cy += mm(4.2);
+      }
+      cy += mm(1.5);
+    }
+  });
+}
+
+/**
  * Exporte la vue courante.
  * @param map          instance Mapbox affichée
  * @param format       pdf | png | jpg | svg
@@ -273,7 +408,14 @@ function drawLegend(pdf, groups, { x, y, width }) {
  * @param dpi          72 | 96 | 200 | 300 | 400
  * @param fileName     nom du fichier produit
  */
-export async function exportMapImage(map, { format, size, orientation, dpi, fileName, legend = [], title, subtitle, featureStates = {} }) {
+export async function exportMapImage(map, {
+  format, size, orientation, dpi, fileName,
+  legend = [], title, subtitle, featureStates = {},
+  /* Les formats matriciels sortent la carte nue par défaut (comportement
+     historique de la carte publique). Quand l'appelant le demande, ils
+     reçoivent le même habillage que le PDF : titre puis légende. */
+  legendOnRaster = false,
+}) {
   if (!map) throw new Error("Carte indisponible.");
 
   // En PDF, la carte ne prend que la zone libre : le reste porte le titre et
@@ -291,6 +433,9 @@ export async function exportMapImage(map, { format, size, orientation, dpi, file
   const { canvas, cleanup } = await renderOffscreen(map, { width, height, dpi, featureStates });
 
   try {
+    // Pictogrammes de légende rastérisés une fois, pour le PDF comme pour l'image.
+    const icons = await rasterizeLegendIcons(legend);
+
     if (format === "pdf") {
       const { jsPDF } = await import("jspdf");
       const pdf = new jsPDF({ orientation, unit: "mm", format: [area.pageWidth, area.pageHeight], compress: true });
@@ -301,22 +446,36 @@ export async function exportMapImage(map, { format, size, orientation, dpi, file
       pdf.addImage(canvas.toDataURL("image/png"), "PNG", area.x, area.y, area.width, area.height, undefined, "FAST");
 
       if (placement === "sous-carte") {
-        drawLegend(pdf, legend, { x: area.x, y: area.y + area.height + 5, width: area.width });
+        drawLegend(pdf, legend, { x: area.x, y: area.y + area.height + 5, width: area.width, icons });
       } else if (placement === "page-dediee") {
         // Trop d'éléments pour la marge basse : la légende a sa propre page.
         pdf.addPage([area.pageWidth, area.pageHeight], orientation);
         drawHeader(pdf, area.pageWidth, { title: "Légende des éléments affichés", subtitle: subtitle || "" });
-        drawLegend(pdf, legend, { x: MARGIN_MM, y: HEADER_MM + MARGIN_MM, width: area.pageWidth - MARGIN_MM * 2 });
+        drawLegend(pdf, legend, { x: MARGIN_MM, y: HEADER_MM + MARGIN_MM, width: area.pageWidth - MARGIN_MM * 2, icons });
       }
       pdf.save(fileName);
+      reportExport("PDF", title || fileName);
       return;
     }
+    const out =
+      legendOnRaster && legend.length
+        ? composeRaster(canvas, {
+            legend,
+            title: title || "CARTODONNEES - Observatoire ARTCI",
+            subtitle: subtitle || "",
+            dpi,
+            icons,
+          })
+        : canvas;
+
     if (format === "svg") {
-      download(toSvg(canvas.toDataURL("image/png"), canvas.width, canvas.height), fileName);
+      download(toSvg(out.toDataURL("image/png"), out.width, out.height), fileName);
+      reportExport("SVG", title || fileName);
       return;
     }
     const mime = format === "jpg" ? "image/jpeg" : "image/png";
-    download(canvas.toDataURL(mime, format === "jpg" ? 0.92 : undefined), fileName);
+    download(out.toDataURL(mime, format === "jpg" ? 0.92 : undefined), fileName);
+    reportExport(format === "jpg" ? "JPEG" : "PNG", title || fileName);
   } finally {
     cleanup();
   }

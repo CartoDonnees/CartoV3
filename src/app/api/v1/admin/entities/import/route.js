@@ -3,6 +3,7 @@ import path from "node:path";
 import { prisma } from "@/lib/prisma";
 import { ok, fail, withErrorHandling } from "@/lib/api/response";
 import { guard } from "@/lib/auth-server";
+import { recordActivity } from "@/lib/activity";
 import { DATE_RE } from "@/lib/entity-search";
 
 const COV_DIR = path.join(process.cwd(), "dataFiles", "data_server", "data_cov");
@@ -153,6 +154,21 @@ export const POST = withErrorHandling(async (request) => {
   // Journal de synchronisation (module « limites cartographiques » de la V2).
   await prisma.sync.create({
     data: { dateUpdate: new Date(), entityType: `REFERENTIEL ${date}`, userId: g.user.id },
+  });
+
+  await recordActivity({
+    actor: g.user,
+    action: "IMPORT",
+    resourceType: "referential",
+    resourceId: date,
+    resourceLabel: `du ${String(date).split("-").reverse().join("/")}`,
+    newValue: Object.fromEntries(
+      report.map(({ label, created, duplicates, total }) => [
+        label,
+        `${created} ajouté(s), ${duplicates} déjà présent(s), ${total} au total`,
+      ]),
+    ),
+    request,
   });
 
   return ok({

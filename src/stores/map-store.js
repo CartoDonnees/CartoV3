@@ -103,7 +103,9 @@ export const useMapStore = create((set, get) => ({
           color: cfgColor[o.key] ?? o.color, // couleur cohérente avec les icônes carte
           fiberKm: cfgKm[o.key],
           description: o.description,
+          // Logo administré en base et nature du réseau (fixe / mobile / hybride).
           imagePath: o.imagePath,
+          network: o.network,
         }));
       }
 

@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import mapboxgl from "mapbox-gl";
 import { X, Check, Plus, GripVertical, GitCompareArrows, CalendarRange, Shapes } from "lucide-react";
 import { useMapStore } from "@/stores/map-store";
+import { OperatorLogo } from "@/components/ui/OperatorLogo";
 import { periodsForRgph } from "@/lib/rgph";
 import { ADMIN_LOADERS } from "@/lib/geodata";
 import { ADMIN_LIMITS } from "@/config/artci";
@@ -358,7 +359,7 @@ export function CompareMode() {
           {excluded.map((code) => (
             <button key={code} onClick={() => addOp(code)} className="glass flex items-center gap-1.5 rounded-2xl px-3 py-2 text-sm font-semibold">
               <Plus size={15} />
-              <span className="h-3 w-3 rounded-full" style={{ backgroundColor: OP[code]?.color }} />
+              <OperatorLogo operator={OP[code] ?? { code, color: "#94a3b8" }} size={16} />
               {OP[code]?.name || code}
             </button>
           ))}

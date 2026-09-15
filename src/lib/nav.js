@@ -15,6 +15,7 @@ import {
   MessageSquareWarning,
   Globe2,
   Settings,
+  Activity,
   Map as MapIcon,
 } from "lucide-react";
 
@@ -39,7 +40,10 @@ export function navForRole(role) {
     return [
       {
         heading: "Vue d'ensemble",
-        items: [{ href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true }],
+        items: [
+          { href: "/admin", label: "Tableau de bord", icon: LayoutDashboard, exact: true },
+          { href: "/admin/activite", label: "Activité de la plateforme", icon: Activity },
+        ],
       },
       {
         heading: "Gestion des données",

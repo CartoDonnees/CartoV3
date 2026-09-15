@@ -9,7 +9,10 @@
     "lint": "eslint",
     "seed": "node prisma/seed.mjs",
     "db:migrate": "prisma migrate deploy",
-    "db:setup": "prisma migrate deploy && prisma generate && npm run seed"
+    "db:setup": "prisma migrate deploy && prisma generate && npm run seed",
+    "data:stations": "node scripts/extract-stations.mjs",
+    "data:station-index": "node --max-old-space-size=4096 scripts/build-station-index.mjs",
+    "data:white-index": "node --max-old-space-size=4096 scripts/build-white-index.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.118.0",
@@ -37,6 +40,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@mapbox/vector-tile": "^3.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/mapbox-gl": "^3.4.1",
@@ -46,6 +50,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "pbf": "^5.1.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

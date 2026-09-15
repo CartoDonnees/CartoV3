@@ -11,6 +11,7 @@ import {
 import { OPERATORS, TECHNOLOGIES } from "@/config/artci";
 import { formatNumber } from "@/lib/utils";
 import { rgphFor } from "@/lib/rgph";
+import { OperatorLogo } from "@/components/ui/OperatorLogo";
 import { Caption, Check, FilterBox, SectionCard, Tile, tooltipStyle } from "@/components/ui/kit";
 
 const OPS = OPERATORS.map((o) => o.code);
@@ -72,7 +73,7 @@ export function NationalStatistics({ stats, date, periods, onDateChange, operato
                 color={o.color}
                 onChange={() => toggle(ops, setOps, o.code, OPS)}
               >
-                <span className="h-4 w-4 shrink-0 rounded-full" style={{ background: o.color }} />
+                <OperatorLogo operator={o} size={18} dim={!ops.includes(o.code)} />
                 {o.code}
               </Check>
             ))}

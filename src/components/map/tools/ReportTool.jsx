@@ -7,6 +7,7 @@ import {
   Phone, Mail, MessageSquare, Crosshair,
 } from "lucide-react";
 import { useMapStore } from "@/stores/map-store";
+import { OperatorLogo } from "@/components/ui/OperatorLogo";
 import { api } from "@/lib/api-client";
 import { EntityPicker } from "./EntityPicker";
 
@@ -262,7 +263,7 @@ export function ReportTool() {
                               ? { borderColor: "transparent", background: `color-mix(in oklab, ${o.color} 16%, transparent)`, color: o.color }
                               : { borderColor: "var(--border)", color: "var(--muted)" }}
                           >
-                            <span className="h-2.5 w-2.5 rounded-full" style={{ background: o.color }} />
+                            <OperatorLogo operator={o} size={16} dim={!on} />
                             {o.name.split(" ")[0]}
                           </button>
                         );

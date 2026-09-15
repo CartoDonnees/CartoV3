@@ -13,6 +13,7 @@ export const GET = withErrorHandling(async () => {
     name: o.name,
     color: o.color,
     imagePath: o.imagePath,
+    network: o.network,
     fiberKm: o.fiberKm,
     description: o.description,
   }));

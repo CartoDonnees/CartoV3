@@ -109,8 +109,44 @@ const QOS_ICONS = Object.fromEntries(
   ),
 );
 
+/* ---------------------- Stations radioélectriques ----------------------- */
+/* Pylône en treillis, tête et ondes à la couleur de la technologie. Un liseré
+   blanc sous chaque trait garde le pictogramme lisible sur l'imagerie satellite
+   comme sur le fond clair. Il s'ancre par le PIED (`icon-anchor: bottom`) :
+   c'est la base du pylône qui désigne l'emplacement du site. */
+const PYLON_FRAME =
+  "M20 12 L11.5 48 M20 12 L28.5 48 M9 48 L31 48 " +
+  "M17.6 22 L22.4 22 M15.3 32 L24.7 32 M13 41.5 L27 41.5 " +
+  "M17.6 22 L24.7 32 M22.4 22 L15.3 32 M15.3 32 L27 41.5 M24.7 32 L13 41.5";
+const PYLON_WAVES =
+  "M14.2 4.6 Q11 8.5 14.2 12.4 M25.8 4.6 Q29 8.5 25.8 12.4 " +
+  "M10.4 2.6 Q5 8.5 10.4 14.4 M29.6 2.6 Q35 8.5 29.6 14.4";
+const PYLON = (color) => `
+<svg xmlns='http://www.w3.org/2000/svg' width='40' height='52' viewBox='0 0 40 52'>
+  <defs><filter id='py' x='-30%' y='-20%' width='160%' height='140%'>
+    <feDropShadow dx='0' dy='1' stdDeviation='1' flood-opacity='0.35'/></filter></defs>
+  <g filter='url(#py)' fill='none' stroke-linecap='round' stroke-linejoin='round'>
+    <path d='${PYLON_WAVES}' stroke='#ffffff' stroke-width='4.4'/>
+    <path d='${PYLON_WAVES}' stroke='${color}' stroke-width='2.2'/>
+    <path d='${PYLON_FRAME}' stroke='#ffffff' stroke-width='4.6'/>
+    <path d='${PYLON_FRAME}' stroke='#1f2937' stroke-width='2.2'/>
+    <circle cx='20' cy='8.5' r='4' fill='${color}' stroke='#ffffff' stroke-width='2'/>
+  </g>
+</svg>`;
+
+/** Couleurs des pylônes - celles des technologies dans tout le reste de l'application. */
+export const PYLON_COLORS = { "2G": "#4eda03", "3G": "#E21273", "4G": "#8b5cf6" };
+
+/** Identifiant de l'icône de pylône d'une technologie. */
+export const pylonIconId = (tech) => `ic-pylon-${tech}`;
+
+const PYLON_ICONS = Object.fromEntries(
+  Object.entries(PYLON_COLORS).map(([tech, color]) => [pylonIconId(tech), PYLON(color)]),
+);
+
 /** SVG complet par icône. */
 const ICON_SVG = {
+  ...PYLON_ICONS,
   ...QOS_ICONS,
   // Localité retenue dans l'échantillon d'audit.
   "ic-qos-audited": BADGE("#0f8442", GLYPHS.check),

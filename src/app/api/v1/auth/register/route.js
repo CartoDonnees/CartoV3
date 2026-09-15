@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { ok, fail, withErrorHandling } from "@/lib/api/response";
 import { hashPassword, signToken, sessionCookieOptions, publicUser, SESSION_COOKIE } from "@/lib/auth";
+import { recordActivity } from "@/lib/activity";
+import { actorNameOf, sanitizeValues } from "@/lib/activity-format";
 
 /** POST /api/v1/auth/register - crée un compte client et ouvre une session. */
 export const POST = withErrorHandling(async (request) => {
@@ -25,6 +27,16 @@ export const POST = withErrorHandling(async (request) => {
       role: "CLIENT",
       status: "ACTIVE",
     },
+  });
+
+  await recordActivity({
+    actor: user,
+    action: "REGISTER",
+    resourceType: "user",
+    resourceId: user.code,
+    resourceLabel: actorNameOf(user),
+    newValue: sanitizeValues(user), // mot de passe masqué
+    request,
   });
 
   const token = await signToken({ sub: user.id, email: user.email, role: user.role });
